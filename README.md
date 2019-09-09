@@ -2,8 +2,8 @@ Koded Dependency Injection Container
 ====================================
 
 [![Latest Stable Version](https://img.shields.io/packagist/v/koded/di.svg)](https://packagist.org/packages/koded/di)
-[![Build Status](https://travis-ci.org/kodedphp/di.svg?branch=master)](https://travis-ci.org/kodedphp/di)
-[![Infection MSI](https://badge.stryker-mutator.io/github.com/kodedphp/di/master)](https://github.com/kodedphp/di)
+[![Build Status](https://travis-ci.org/kodedphp/di.svg?branch=master)](https://travis-ci.org/kodedphp/container)
+[![Infection MSI](https://badge.stryker-mutator.io/github.com/kodedphp/di/master)](https://github.com/kodedphp/container)
 [![Minimum PHP Version: 7.2](https://img.shields.io/badge/php-%3E%3D%207.2-8892BF.svg)](https://php.net/)
 [![Software license](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](LICENSE)
 
