@@ -1,16 +1,21 @@
 Koded Dependency Injection Container
 ====================================
 
-[![Latest Stable Version](https://img.shields.io/packagist/v/koded/di.svg)](https://packagist.org/packages/koded/di)
-[![Build Status](https://travis-ci.org/kodedphp/di.svg?branch=master)](https://travis-ci.org/kodedphp/container)
-[![Infection MSI](https://badge.stryker-mutator.io/github.com/kodedphp/di/master)](https://github.com/kodedphp/container)
+[![Latest Stable Version](https://img.shields.io/packagist/v/koded/container.svg)](https://packagist.org/packages/koded/container)
+[![Build Status](https://travis-ci.org/kodedphp/container.svg?branch=master)](https://travis-ci.org/kodedphp/container)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/kodedphp/container/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/kodedphp/container/?branch=master)
+[![Infection MSI](https://badge.stryker-mutator.io/github.com/kodedphp/container/master)](https://github.com/kodedphp/container)
 [![Minimum PHP Version: 7.2](https://img.shields.io/badge/php-%3E%3D%207.2-8892BF.svg)](https://php.net/)
 [![Software license](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](LICENSE)
 
 koded/di - Dependency Injection Container
 -----------------------------------------
 
-`koded/di` is a SOLID OOP application bootstrapping and wiring library.
+```bash
+composer require koded/container
+```
+
+`koded/container` is a SOLID OOP application bootstrapping and wiring library.
 In other words, `Koded\DIContainer` implements a **design pattern** called **Dependency Injection**.
 The main principle of DIP is to separate the behavior from dependency resolution.
 
