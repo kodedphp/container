@@ -19,7 +19,6 @@ matrix:
     - php: 7.4snapshot
 
 install:
-  - rm composer.lock
   - travis_retry composer update -o --no-interaction --prefer-source
 
 script:
