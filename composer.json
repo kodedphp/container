@@ -1,0 +1,51 @@
+{
+  "name": "koded/di",
+  "type": "library",
+  "homepage": "https://github.com/kodedphp/container",
+  "description": "A simple Dependency Injection Container with application modules support",
+  "license": "BSD-3-Clause",
+  "keywords": [
+    "dic",
+    "dependency",
+    "injection",
+    "container",
+    "psr-11"
+  ],
+  "authors": [
+    {
+      "name": "Mihail Binev",
+      "homepage": "https://kodeart.com"
+    }
+  ],
+  "prefer-stable": true,
+  "require": {
+    "php": "^7.2",
+    "koded/stdlib": "~4",
+    "psr/container": "~1"
+  },
+  "autoload": {
+    "exclude-from-classmap": [
+      "/Tests/"
+    ],
+    "psr-4": {
+      "Koded\\": ""
+    }
+  },
+  "require-dev": {
+    "phpunit/phpunit": "~7",
+    "codacy/coverage": "dev-master",
+    "infection/infection": "^0.13",
+    "phpbench/phpbench": "@dev",
+    "scrutinizer/ocular": "^1.6"
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Koded\\Tests\\": "Tests/"
+    }
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.0.x-dev"
+    }
+  }
+}
