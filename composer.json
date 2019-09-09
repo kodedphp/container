@@ -1,5 +1,5 @@
 {
-  "name": "koded/di",
+  "name": "koded/container",
   "type": "library",
   "homepage": "https://github.com/kodedphp/container",
   "description": "A simple Dependency Injection Container with application modules support",
