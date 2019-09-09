@@ -10,7 +10,7 @@ build:
           version: '7.2'
   dependencies:
     override:
-      - composer install --no-interaction --prefer-stable
+      - composer install --no-interaction --prefer-source
 
 filter:
   excluded_paths:
