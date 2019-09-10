@@ -63,6 +63,13 @@ final class DIContainer implements ContainerInterface
         $this->named      = [];
     }
 
+    public function __invoke(callable $callable, array $arguments = [])
+    {
+        return call_user_func_array($callable, $this->reflection->processMethodArguments(
+            $this, $this->reflection->newMethodFromCallable($callable), $arguments
+        ));
+    }
+
     public function inject(string $class, array $arguments = []): ?object
     {
         $binding = $this->getFromBindings($class);
@@ -83,18 +90,10 @@ final class DIContainer implements ContainerInterface
         }
     }
 
-
     public function singleton(string $class, array $arguments = []): object
     {
-        $dependency = $this->getFromBindings($class);
-
-        if (isset($this->singletons[$dependency])) {
-            return $this->singletons[$dependency];
-        }
-
         return $this->singletons[$class] = $this->inject($class, $arguments);
     }
-
 
     public function share(object $instance): DIContainer
     {
@@ -104,7 +103,6 @@ final class DIContainer implements ContainerInterface
 
         return $this;
     }
-
 
     public function bind(string $interface, string $class): DIContainer
     {
@@ -122,7 +120,6 @@ final class DIContainer implements ContainerInterface
         return $this;
     }
 
-
     public function named(string $name, $value): DIContainer
     {
         if (1 !== preg_match('/\$[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*/', $name)) {
@@ -131,14 +128,6 @@ final class DIContainer implements ContainerInterface
         $this->named[$name] = $value;
 
         return $this;
-    }
-
-
-    public function call(callable $callable, array $arguments = [])
-    {
-        return call_user_func_array($callable, $this->reflection->processMethodArguments(
-            $this, $this->reflection->newMethodFromCallable($callable), $arguments
-        ));
     }
 
     /**
@@ -160,15 +149,7 @@ final class DIContainer implements ContainerInterface
     {
         $this->assertEmpty($id, 'dependency');
 
-        if (isset($this->bindings[$id])) {
-            return true;
-        }
-
-        if (isset($this->named[$id])) {
-            return true;
-        }
-
-        return false;
+        return isset($this->bindings[$id]) || isset($this->named[$id]);
     }
 
     /**
