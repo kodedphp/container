@@ -6,11 +6,8 @@ use Koded\DIContainer;
 
 class BindMethodTest extends DITestCase
 {
-
     public function testUntargetedBinding()
     {
-        $this->assertSkippedTest(__FUNCTION__);
-
         $this->di->named('$arg', 'foobar');
         $this->di->bind(TestClassWithPrimitiveConstructorArgument::class, '$arg');
 

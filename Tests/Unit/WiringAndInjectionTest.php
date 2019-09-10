@@ -9,8 +9,6 @@ class WiringAndInjectionTest extends DITestCase
 {
     public function testWithSingleton()
     {
-        $this->assertSkippedTest(__FUNCTION__);
-
         $this->di->singleton(PDO::class, ['sqlite:']);
         $dispatcher = $this->di->inject(PostCommandDispatcher::class, ['hello']);
         $this->assert($dispatcher);
@@ -18,8 +16,6 @@ class WiringAndInjectionTest extends DITestCase
 
     public function testWithNamedValueParameter()
     {
-        $this->assertSkippedTest(__FUNCTION__);
-
         $this->di->named('$dsn', 'sqlite:');
         $dispatcher = $this->di->inject(PostCommandDispatcher::class, ['hello']);
         $this->assert($dispatcher);
@@ -27,8 +23,6 @@ class WiringAndInjectionTest extends DITestCase
 
     public function testWithNamedInstanceParameter()
     {
-        $this->assertSkippedTest(__FUNCTION__);
-
         $this->di->named('$pdo', new PDO('sqlite:'));
         $dispatcher = $this->di->inject(PostCommandDispatcher::class, ['hello']);
         $this->assert($dispatcher);
@@ -50,7 +44,7 @@ class WiringAndInjectionTest extends DITestCase
 
     private function assert($dispatcher): void
     {
-        [$user, $post] = $this->di->call([$dispatcher, 'get']);
+        [$user, $post] = ($this->di)([$dispatcher, 'get']);
 
         $this->assertSame('anonymous', $user);
         $this->assertSame([42, 'Hello from DIC', 'hello'], $post);

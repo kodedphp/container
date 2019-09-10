@@ -5,7 +5,7 @@ namespace Koded\Tests\Unit;
 use JsonSerializable;
 use Koded\Stdlib\Config;
 use PDO;
-use PHPUnit\Exception;
+use Exception;
 
 interface PostRepository
 {

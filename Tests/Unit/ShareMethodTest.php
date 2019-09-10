@@ -2,14 +2,13 @@
 
 namespace Koded\Tests\Unit;
 
-use Koded\{DIContainer, DIModule, Stdlib\Interfaces\ArrayDataFilter};
+use Koded\{DIContainer, DIModule};
+use Koded\Stdlib\Interfaces\ArrayDataFilter;
 
 class ShareMethodTest extends DITestCase
 {
-    public function test()
+    public function testImmutability()
     {
-        $this->assertSkippedTest(__FUNCTION__);
-
         $actual = $this->di->get(TestClassWithInterfaceDependency::class);
         $this->assertInstanceOf(TestClassWithInterfaceDependency::class, $actual);
 
@@ -33,8 +32,8 @@ class ShareMethodTest extends DITestCase
 
     protected function createContainer(): DIContainer
     {
-        return new DIContainer(new class implements DIModule {
-
+        return new DIContainer(new class implements DIModule
+        {
             public function configure(DIContainer $injector): void
             {
                 $injector->bind(TestInterface::class, TestClassWithInterfaceAndNoConstructor::class);

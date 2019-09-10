@@ -9,7 +9,6 @@ abstract class DITestCase extends TestCase
 {
     /** @var DIContainer */
     protected $di;
-    protected $skippedTests = [];
 
     abstract protected function createContainer(): DIContainer;
 
@@ -21,12 +20,5 @@ abstract class DITestCase extends TestCase
     protected function tearDown(): void
     {
         $this->di = null;
-    }
-
-    protected function assertSkippedTest($function)
-    {
-        if (isset($this->skippedTests[$function])) {
-            $this->markTestSkipped($this->skippedTests[$function]);
-        }
     }
 }

@@ -19,17 +19,12 @@ class InjectObjectTest extends DITestCase
 
     public function testClassWithoutConstructorArguments()
     {
-        $this->assertSkippedTest(__FUNCTION__);
-
         $instance = $this->di->inject(TestClassWithoutConstructorArguments::class);
-
         $this->assertInstanceOf(TestClassWithoutConstructorArguments::class, $instance);
     }
 
     public function testClassWithConstructorArguments()
     {
-        $this->assertSkippedTest(__FUNCTION__);
-
         $this->di->named('$pdo', new PDO('sqlite:'));
         $instance = $this->di->inject(TestClassWithConstructorArguments::class);
 
@@ -38,8 +33,6 @@ class InjectObjectTest extends DITestCase
 
     public function testChildClassWithInterfaceWithoutMapping()
     {
-        $this->assertSkippedTest(__FUNCTION__);
-
         $this->expectException(DIException::class);
         $this->expectExceptionCode(DIException::E_CANNOT_INSTANTIATE);
 
@@ -48,8 +41,6 @@ class InjectObjectTest extends DITestCase
 
     public function testChildClassWithInterfaceWithMapping()
     {
-        $this->assertSkippedTest(__FUNCTION__);
-
         $this->di->bind(TestInterface::class, TestClassWithInterfaceAndNoConstructor::class);
         $instance = $this->di->inject(TestClassWithInterfaceDependency::class);
 
@@ -58,8 +49,6 @@ class InjectObjectTest extends DITestCase
 
     public function testClassWithMultipleDependencies()
     {
-        $this->assertSkippedTest(__FUNCTION__);
-
         $instance = $this->di->inject(TestClassWithMultipleDependencies::class, ['val1', 42, false, ['val2']]);
 
         $this->assertSame('val1', $instance->a);
@@ -81,8 +70,6 @@ class InjectObjectTest extends DITestCase
 
     public function testArrayObject()
     {
-        $this->assertSkippedTest(__FUNCTION__);
-
         /** @var ArrayObject $instance */
         $instance = $this->di->inject(ArrayObject::class, [['foo' => 'bar'], ArrayObject::ARRAY_AS_PROPS]);
 

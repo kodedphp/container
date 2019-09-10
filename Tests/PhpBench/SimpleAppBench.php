@@ -16,10 +16,10 @@ class SimpleAppBench extends AbstractBench
      * @Iterations(5)
      * @Assert(1000)
      */
-    public function benchAppCall()
+    public function benchAppInvoke()
     {
         $dispatcher = $this->di->inject(PostCommandDispatcher::class, ['hello']);
-        $this->di->call([$dispatcher, 'get']);
+        ($this->di)([$dispatcher, 'get']);
     }
 
     protected function modules(...$modules)

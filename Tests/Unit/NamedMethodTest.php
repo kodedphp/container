@@ -6,15 +6,8 @@ use Koded\{DIContainer, DIException};
 
 class NamedMethodTest extends DITestCase
 {
-    protected $skippedTests = [
-        'testShouldSetTheNamedParameter',
-        'testShouldThrowExceptionForInvalidParameterName'
-    ];
-
     public function testShouldSetTheNamedParameter()
     {
-        $this->assertSkippedTest(__FUNCTION__);
-
         $name = '$name';
         $this->di->named($name, 42);
         $this->assertSame(42, $this->di->getStorage()[DIContainer::NAMED][$name]);
@@ -29,8 +22,6 @@ class NamedMethodTest extends DITestCase
      */
     public function testShouldThrowExceptionForInvalidParameterName($name)
     {
-        $this->assertSkippedTest(__FUNCTION__);
-
         $this->expectException(DIException::class);
         $this->expectExceptionCode(DIException::E_INVALID_PARAMETER_NAME);
 

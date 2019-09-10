@@ -2,8 +2,7 @@
 
 namespace Koded\Tests\Unit;
 
-use Koded\DIContainer;
-use Koded\DIException;
+use Koded\{DIContainer, DIException};
 use Psr\Container\NotFoundExceptionInterface;
 
 class ExceptionsTest extends DITestCase
@@ -24,10 +23,11 @@ class ExceptionsTest extends DITestCase
         $this->di->inject(TestCircularDependencyA::class);
     }
 
-//    public function testInvokeMethodForInvalidMethod()
-//    {
-//        $this->di->call([\stdClass::class, 'fubar']);
-//    }
+    public function testInvokeMethodForInvalidMethod()
+    {
+        $this->expectException(\TypeError::class);
+        ($this->di)([\stdClass::class, 'fubar']);
+    }
 
     public function testForClassWithNonPublicConstructor()
     {
@@ -74,16 +74,6 @@ class ExceptionsTest extends DITestCase
         $this->expectExceptionCode(DIException::E_INSTANCE_NOT_FOUND);
         $this->di->get('Fubar');
     }
-
-//    public function testSingletonCreateWithBinding()
-//    {
-//        $this->expectException(DIException::class);
-//        $this->expectExceptionCode(DIException::E_CANNOT_BIND_INSTANCE);
-//        $this->expectExceptionMessage('Cannot create a singleton instance');
-//
-//        $this->di->bind(TestOtherInterface::class, TestClassWithInterfaceAndNoConstructor::class);
-//        $this->di->singleton(TestClassWithInterfaceAndNoConstructor::class);
-//    }
 
     protected function createContainer(): DIContainer
     {
