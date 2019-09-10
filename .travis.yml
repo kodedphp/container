@@ -22,8 +22,8 @@ install:
   - travis_retry composer update -o --no-interaction --prefer-source
 
 script:
-  - vendor/bin/phpunit --coverage-clover=build/coverage/clover.xml -v
+  - vendor/bin/phpunit --coverage-clover=build/coverage/clover.xml
 
 after_success:
-  - travis_retry vendor/bin/codacycoverage clover build/coverage/clover.xml
+  - travis_retry vendor/bin/ocular code-coverage:upload --format=php-clover build/coverage/clover.xml
   - travis_retry vendor/bin/infection --threads=4 --min-msi=80 --min-covered-msi=80 --log-verbosity=none

@@ -19,3 +19,4 @@ filter:
 
 tools:
   php_analyzer: true
+  external_code_coverage: true
