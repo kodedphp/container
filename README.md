@@ -1,31 +1,30 @@
-Koded Dependency Injection Container
-====================================
+Dependency Injection Container - Koded
+--------------------------------------
 
 [![Latest Stable Version](https://img.shields.io/packagist/v/koded/container.svg)](https://packagist.org/packages/koded/container)
 [![Build Status](https://travis-ci.org/kodedphp/container.svg?branch=master)](https://travis-ci.org/kodedphp/container)
+[![Code Coverage](https://scrutinizer-ci.com/g/kodedphp/container/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/kodedphp/container/?branch=master)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/kodedphp/container/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/kodedphp/container/?branch=master)
 [![Infection MSI](https://badge.stryker-mutator.io/github.com/kodedphp/container/master)](https://github.com/kodedphp/container)
 [![Minimum PHP Version: 7.2](https://img.shields.io/badge/php-%3E%3D%207.2-8892BF.svg)](https://php.net/)
 [![Software license](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](LICENSE)
 
-koded/di - Dependency Injection Container
------------------------------------------
-
-```bash
-composer require koded/container
-```
 
 `koded/container` is a SOLID OOP application bootstrapping and wiring library.
 In other words, `Koded\DIContainer` implements a **design pattern** called **Dependency Injection**.
 The main principle of DIP is to separate the behavior from dependency resolution.
 
+```bash
+composer require koded/container
+```
+
 ## Example
 
-Lets look at a simple blog application that
-- has interfaces for the database repositories and corresponding implementations
-- uses a shared PDO instance
+Let's look at a simple blog application that has
+- interfaces for the database repositories and corresponding implementations
+- a shared PDO instance
 - a service class for the blog content fetching
-- a dispatcher class that executes the request
+- a handler class that maps the request method
 
 
 ```php
@@ -78,24 +77,9 @@ class PostService {
 }
 ```
 
-This is the bootstrapping / wiring application module
+Then somewhere we might have a handler/controller that asks for it's own dependencies:
 ```php
-class BlogModule implements DIModule {
-    public function configure(DIContainer $container): void {
-        // bind interfaces to concrete class implementations
-        $container->bind(PostRepository::class, DatabasePostRepository::class);
-        $container->bind(UserRepository::class, DatabaseUserRepository::class);
-        $container->bind(ServerRequestInterface::class, /*some PSR-7 server request class name*/);
-        
-        // share one PDO instance
-        $container->singleton(PDO::class, ['sqlite:database.db']);
-    }
-}
-```
-
-Then somewhere we might have a dispatcher/controller that asks for it's own dependencies:
-```php
-class PostCommandDispatcher {
+class HttpPostHandler {
     public function get(ServerRequestInterface $request, PostService $service): ResponseInterface {
         $slug = slugify($request->getUri()->getPath());
         $post = $service->findBlogPostBySlug($slug);
@@ -106,19 +90,34 @@ class PostCommandDispatcher {
 }
 ```
 
-And finally in the dispatcher file we execute the request
+This is the bootstrapping / wiring application module
+```php
+class BlogModule implements DIModule {
+    public function configure(DIContainer $injector): void {
+        // bind interfaces to concrete class implementations
+        $injector->bind(PostRepository::class, DatabasePostRepository::class);
+        $injector->bind(UserRepository::class, DatabaseUserRepository::class);
+        $injector->bind(ServerRequestInterface::class, /*some PSR-7 server request class name*/);
+        
+        // share one PDO instance
+        $injector->singleton(PDO::class, ['sqlite:database.db']);
+    }
+}
+```
+
+And finally in the dispatcher file, we execute the request
 ```php
 // index.php
 
-// resolved through an HTTP router or other means
-$resolvedDispatcher = PostCommandDispatcher::class;
+// (resolved through an HTTP router or other means)
+$resolvedDispatcher = HttpPostHandler::class;
 $resolvedMethod = 'get';
 
-$response = (new DIContainer(new BlogModule))
-    ->call([$resolvedDispatcher, $resolvedMethod]);
+// by invoking the container
+$response = (new DIContainer(new BlogModule))([$resolvedDispatcher, $resolvedMethod]);
 
-// use the `$response` object to output the blog content
-// `echo $response->getBody()->getContents();`
+// we have a `$response` object to output the blog content
+// ex. `echo $response->getBody()->getContents();`
 ```
 
 > To be continued...
