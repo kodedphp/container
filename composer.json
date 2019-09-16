@@ -33,7 +33,7 @@
   },
   "require-dev": {
     "ext-pdo": "*",
-    "ext-json": "*",,
+    "ext-json": "*",
     "phpunit/phpunit": "~7",
     "infection/infection": "^0.13",
     "phpbench/phpbench": "@dev",
