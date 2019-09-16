@@ -36,13 +36,13 @@ class InjectObjectTest extends DITestCase
         $this->expectException(DIException::class);
         $this->expectExceptionCode(DIException::E_CANNOT_INSTANTIATE);
 
-        $this->di->inject(TestClassWithInterfaceDependency::class);
+        $this->di->inject(TestClassWithConstructorInterfaceDependency::class);
     }
 
     public function testChildClassWithInterfaceWithMapping()
     {
         $this->di->bind(TestInterface::class, TestClassWithInterfaceAndNoConstructor::class);
-        $instance = $this->di->inject(TestClassWithInterfaceDependency::class);
+        $instance = $this->di->inject(TestClassWithConstructorInterfaceDependency::class);
 
         $this->assertInstanceOf(TestClassWithInterfaceAndNoConstructor::class, $instance->getDependency());
     }

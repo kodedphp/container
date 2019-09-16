@@ -12,6 +12,7 @@
 
 namespace Koded;
 
+use Closure;
 use ReflectionClass;
 use ReflectionFunction;
 use ReflectionFunctionAbstract;
@@ -43,6 +44,13 @@ final class DIReflector
         return new $class(...$this->processMethodArguments($container, $constructor, $arguments));
     }
 
+    /**
+     * @param DIContainer                           $container
+     * @param ReflectionFunction | ReflectionMethod $method
+     * @param array                                 $arguments
+     *
+     * @return array
+     */
     public function processMethodArguments(
         DIContainer $container,
         ReflectionFunctionAbstract $method,
@@ -72,6 +80,12 @@ final class DIReflector
         return $args;
     }
 
+    /**
+     * @param callable $callable
+     *
+     * @return ReflectionMethod | ReflectionFunction
+     * @throws \ReflectionException
+     */
     public function newMethodFromCallable(callable $callable): ReflectionFunctionAbstract
     {
         switch (gettype($callable)) {
@@ -79,7 +93,7 @@ final class DIReflector
                 return new ReflectionMethod(...$callable);
 
             case 'object';
-                if ($callable instanceof \Closure) {
+                if ($callable instanceof Closure) {
                     return new ReflectionFunction($callable);
                 }
 

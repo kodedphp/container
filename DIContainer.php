@@ -33,16 +33,9 @@ final class DIContainer implements ContainerInterface
     private $bindings   = [];
     private $named      = [];
 
-    private $interfaces = [];
-
     public function __construct(DIModule ...$modules)
     {
         $this->reflection = new DIReflector;
-        $this->interfaces = array_filter(get_declared_interfaces(), function(string $name) {
-            return false === strpos($name, '\\');
-        });
-        $this->interfaces = array_flip($this->interfaces);
-
         foreach ((array)$modules as $module) {
             $module->configure($this);
         }
@@ -58,7 +51,6 @@ final class DIContainer implements ContainerInterface
         $this->reflection = null;
 
         $this->singletons = [];
-        $this->interfaces = [];
         $this->bindings   = [];
         $this->named      = [];
     }
@@ -74,10 +66,6 @@ final class DIContainer implements ContainerInterface
     {
         $binding = $this->getFromBindings($class);
 
-        if (isset($this->singletons[$binding])) {
-            return $this->singletons[$binding];
-        }
-
         if (isset($this->inProgress[$binding])) {
             throw DIException::forCircularDependency($binding);
         }
@@ -92,14 +80,18 @@ final class DIContainer implements ContainerInterface
 
     public function singleton(string $class, array $arguments = []): object
     {
+        $binding = $this->getFromBindings($class);
+
+        if (isset($this->singletons[$binding])) {
+            return $this->singletons[$binding];
+        }
+
         return $this->singletons[$class] = $this->inject($class, $arguments);
     }
 
     public function share(object $instance): DIContainer
     {
-        $class = get_class($instance);
-        $this->mapInterfaces($class, $class);
-        $this->singletons[$class] = $instance;
+        $this->singletons[get_class($instance)] = $instance;
 
         return $this;
     }
@@ -126,7 +118,6 @@ final class DIContainer implements ContainerInterface
             throw DIException::forInvalidParameterName();
         }
         $this->named[$name] = $value;
-
         return $this;
     }
 
@@ -148,7 +139,6 @@ final class DIContainer implements ContainerInterface
     public function has($id): bool
     {
         $this->assertEmpty($id, 'dependency');
-
         return isset($this->bindings[$id]) || isset($this->named[$id]);
     }
 
@@ -162,7 +152,6 @@ final class DIContainer implements ContainerInterface
         }
 
         $dependency = $this->getFromBindings($id);
-
         return $this->singletons[$dependency]
             ?? $this->named[$dependency]
             ?? $this->inject($dependency);
@@ -181,7 +170,6 @@ final class DIContainer implements ContainerInterface
     private function getFromBindings(string $dependency): string
     {
         $this->assertEmpty($dependency, 'class/interface');
-
         return $this->bindings[$dependency] ?? $dependency;
     }
 
@@ -189,15 +177,6 @@ final class DIContainer implements ContainerInterface
     {
         if (empty($value)) {
             throw DIException::forEmptyName($type);
-        }
-    }
-
-    private function mapInterfaces(string $dependency, string $class): void
-    {
-        foreach ((@class_implements($dependency, false) ?: []) as $implements) {
-            if (false === isset($this->interfaces[$implements])) {
-                $this->bindings[$implements] = $class;
-            }
         }
     }
 }

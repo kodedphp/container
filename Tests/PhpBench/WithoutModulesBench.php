@@ -3,7 +3,7 @@
 namespace Koded\Tests\PhpBench;
 
 use Koded\Tests\Unit\{TestClassWithInterfaceAndNoConstructor,
-    TestClassWithInterfaceDependency,
+    TestClassWithConstructorInterfaceDependency,
     TestInterface,
     TestOtherInterface};
 
@@ -17,7 +17,7 @@ class WithoutModulesBench extends AbstractBench
     public function benchInject()
     {
         $this->di->bind(TestInterface::class, TestClassWithInterfaceAndNoConstructor::class);
-        $this->di->inject(TestClassWithInterfaceDependency::class);
+        $this->di->inject(TestClassWithConstructorInterfaceDependency::class);
     }
 
     /**
@@ -27,7 +27,7 @@ class WithoutModulesBench extends AbstractBench
     public function benchSingleton()
     {
         $this->di->bind(TestInterface::class, TestClassWithInterfaceAndNoConstructor::class);
-        $this->di->singleton(TestClassWithInterfaceDependency::class);
+        $this->di->singleton(TestClassWithConstructorInterfaceDependency::class);
     }
 
     /**
@@ -37,8 +37,8 @@ class WithoutModulesBench extends AbstractBench
     public function benchPsr11()
     {
         $this->di->bind(TestInterface::class, TestClassWithInterfaceAndNoConstructor::class);
-        $this->di->singleton(TestClassWithInterfaceDependency::class);
-        $this->di->get(TestClassWithInterfaceDependency::class);
+        $this->di->singleton(TestClassWithConstructorInterfaceDependency::class);
+        $this->di->get(TestClassWithConstructorInterfaceDependency::class);
     }
 
     /**
@@ -48,7 +48,7 @@ class WithoutModulesBench extends AbstractBench
     public function benchBind()
     {
         $this->di->bind(TestInterface::class, TestClassWithInterfaceAndNoConstructor::class);
-        $this->di->bind(TestOtherInterface::class, TestClassWithInterfaceDependency::class);
+        $this->di->bind(TestOtherInterface::class, TestClassWithConstructorInterfaceDependency::class);
     }
 
     /**

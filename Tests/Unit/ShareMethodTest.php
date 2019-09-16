@@ -3,30 +3,19 @@
 namespace Koded\Tests\Unit;
 
 use Koded\{DIContainer, DIModule};
-use Koded\Stdlib\Interfaces\ArrayDataFilter;
 
 class ShareMethodTest extends DITestCase
 {
     public function testImmutability()
     {
-        $actual = $this->di->get(TestClassWithInterfaceDependency::class);
-        $this->assertInstanceOf(TestClassWithInterfaceDependency::class, $actual);
+        $actual = $this->di->get(TestClassWithConstructorInterfaceDependency::class);
+        $this->assertInstanceOf(TestClassWithConstructorInterfaceDependency::class, $actual);
 
-        $new = new TestClassWithInterfaceDependency(new TestClassWithInterfaceAndNoConstructor);
+        $new = $this->di->inject(TestClassWithConstructorInterfaceDependency::class);
         $this->di->share($new);
 
-        $this->assertNotSame($new, $actual);
-    }
-
-    public function testImplementedInterfaces()
-    {
-        $shared = $this->di->inject(TestClassWithoutConstructorArguments::class);
-        $this->di->share($shared);
-
-        $this->assertTrue(
-            $this->di->has(ArrayDataFilter::class),
-            'TestClassWithoutConstructorArguments extends Config, which also implements ArrayDataFilter interface,
-            therefore the parent interfaces are bound to this class instance'
+        $this->assertNotSame($new, $actual,
+            'When instance is shared, the existing shared instance is replaced with the new created'
         );
     }
 
@@ -37,7 +26,7 @@ class ShareMethodTest extends DITestCase
             public function configure(DIContainer $injector): void
             {
                 $injector->bind(TestInterface::class, TestClassWithInterfaceAndNoConstructor::class);
-                $injector->singleton(TestClassWithInterfaceDependency::class);
+                $injector->singleton(TestClassWithConstructorInterfaceDependency::class);
             }
         });
     }

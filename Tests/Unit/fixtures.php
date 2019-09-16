@@ -2,10 +2,11 @@
 
 namespace Koded\Tests\Unit;
 
+use Countable;
+use Exception;
 use JsonSerializable;
 use Koded\Stdlib\Config;
 use PDO;
-use Exception;
 
 interface PostRepository
 {
@@ -125,13 +126,17 @@ class TestClassForInvokeMethod
     }
 }
 
-class TestClassWithConstructorArguments implements JsonSerializable
+class TestClassWithConstructorArguments implements JsonSerializable, Countable
 {
     public function __construct(PDO $pdo)
     {
     }
 
     public function jsonSerialize()
+    {
+    }
+
+    public function count()
     {
     }
 }
@@ -144,7 +149,7 @@ class TestClassWithInterfaceAndNoConstructor implements TestInterface
 {
 }
 
-class TestClassWithInterfaceDependency
+class TestClassWithConstructorInterfaceDependency
 {
     private $dependency;
 
