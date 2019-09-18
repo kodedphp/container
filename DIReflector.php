@@ -14,6 +14,7 @@ namespace Koded;
 
 use Closure;
 use ReflectionClass;
+use ReflectionException;
 use ReflectionFunction;
 use ReflectionFunctionAbstract;
 use ReflectionMethod;
@@ -62,19 +63,19 @@ final class DIReflector
             $name = $method->getNamespaceName() ?: $method->getName();
         }
 
-        $args = $arguments + $method->getParameters(); // TODO use args positions?
+        $args = array_replace($method->getParameters(), $arguments);
+
+        // PHP quirks...
+
+        if ($name === \ArrayObject::class) {
+            $args[2] = \ArrayIterator::class;
+        }
 
         foreach ($args as $i => $param) {
             if (!$param instanceof ReflectionParameter) {
                 continue;
             }
-            $args[$i] = $this->getFromParameterType($container, $param, $arguments);
-        }
-
-        // PHP quirks...
-
-        if ($name === 'ArrayObject' && null === $args[2]) {
-            $args[2] = 'ArrayIterator';
+            $args[$i] = $this->getFromParameterType($container, $param);
         }
 
         return $args;
@@ -84,7 +85,7 @@ final class DIReflector
      * @param callable $callable
      *
      * @return ReflectionMethod | ReflectionFunction
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function newMethodFromCallable(callable $callable): ReflectionFunctionAbstract
     {
@@ -96,7 +97,6 @@ final class DIReflector
                 if ($callable instanceof Closure) {
                     return new ReflectionFunction($callable);
                 }
-
                 return (new ReflectionClass($callable))->getMethod('__invoke');
 
             default:
@@ -104,15 +104,15 @@ final class DIReflector
         }
     }
 
-    private function getFromParameterType(DIContainer $container, ReflectionParameter $parameter, array $arguments)
+    private function getFromParameterType(DIContainer $container, ReflectionParameter $parameter)
     {
         if (!$dependency = $parameter->getClass()) {
             return $arguments[$parameter->getPosition()]
-                ?? $this->getFromParameter($parameter, $container->getStorage());
+                ?? $this->getFromParameter($container, $parameter);
         }
 
         // Global parameter overriding / singleton instance?
-        if ($param = $this->getFromParameter($parameter, $container->getStorage())) {
+        if ($param = $this->getFromParameter($container, $parameter)) {
             return $param;
         }
 
@@ -123,20 +123,33 @@ final class DIReflector
         return $container->inject($dependency->name);
     }
 
-    private function getFromParameter(ReflectionParameter $parameter, array $storage)
+    private function getFromParameter(DIContainer $container, ReflectionParameter $parameter)
     {
-        $name = ($parameter->getClass() ?: $parameter)->name;
+        $storage = $container->getStorage();
+        $name    = ($parameter->getClass() ?: $parameter)->name;
 
-        if ($storage[DIContainer::SINGLETONS][$name] ?? false) {
+        if (isset($storage[DIContainer::EXCLUDE][$name])) {
+            if (array_intersect($storage[DIContainer::EXCLUDE][$name], array_keys($storage[DIContainer::SINGLETONS]))) {
+                return (clone $container)->inject($name);
+            }
+        }
+
+        if (isset($storage[DIContainer::SINGLETONS][$name])) {
             return $storage[DIContainer::SINGLETONS][$name];
         }
 
-        if ($storage[DIContainer::NAMED]['$' . $parameter->name] ?? false) {
+        if (isset($storage[DIContainer::NAMED]['$' . $parameter->name])) {
             return $storage[DIContainer::NAMED]['$' . $parameter->name];
         }
 
         if ($parameter->isDefaultValueAvailable()) {
             return $parameter->getDefaultValue();
+        }
+
+        $type = $parameter->getType();
+        if ($type && $type->isBuiltin()) {
+            throw DIException::forMissingArgument($name, $parameter->getPosition(),
+                $parameter->getDeclaringClass()->name . '::' . $parameter->getDeclaringFunction()->name);
         }
 
         return null;
