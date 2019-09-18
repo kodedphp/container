@@ -12,18 +12,44 @@
 
 namespace Koded;
 
-use Psr\Container\ContainerInterface;
+use Psr\Container\{ContainerExceptionInterface, ContainerInterface};
 use Throwable;
 
+/**
+ * Interface DIModule contributes the application configuration,
+ * typically the interface binding which are used to inject the dependencies.
+ *
+ * The application is composed of a set of DIModule(s) and some bootstrapping code.
+ */
 interface DIModule
 {
+    /**
+     * Provides bindings and other configurations for this app module.
+     * Also reduces the repetition and results in a more readable configuration.
+     * Implement the `configure()` method to bind your interfaces.
+     *
+     * ex: `$injector->bind(MyInterface::class, MyImplementation::class);`
+     *
+     * @param DIContainer $injector
+     */
     public function configure(DIContainer $injector): void;
 }
 
+/**
+ * The entry point of the DIContainer that dwars the lines between the
+ * APIs, implementation of these APIs, modules that configure these
+ * implementations and applications that consist of of a collection of modules.
+ *
+ * ```
+ * $container = new DIContainer(new ModuleA, new ModuleB, ... new ModuleZ);
+ * ($container)([AppEntry::class, 'method']);
+ * ```
+ */
 final class DIContainer implements ContainerInterface
 {
     public const SINGLETONS = 'singletons';
     public const BINDINGS   = 'bindings';
+    public const EXCLUDE    = 'exclude';
     public const NAMED      = 'named';
 
     private $reflection;
@@ -31,6 +57,7 @@ final class DIContainer implements ContainerInterface
 
     private $singletons = [];
     private $bindings   = [];
+    private $exclude    = [];
     private $named      = [];
 
     public function __construct(DIModule ...$modules)
@@ -43,7 +70,9 @@ final class DIContainer implements ContainerInterface
 
     public function __clone()
     {
-        throw DIException::forCloningNotAllowed();
+        $this->inProgress = [];
+        $this->singletons = [];
+        $this->named      = [];
     }
 
     public function __destruct()
@@ -52,20 +81,35 @@ final class DIContainer implements ContainerInterface
 
         $this->singletons = [];
         $this->bindings   = [];
+        $this->exclude    = [];
         $this->named      = [];
     }
 
     public function __invoke(callable $callable, array $arguments = [])
     {
-        return call_user_func_array($callable, $this->reflection->processMethodArguments(
-            $this, $this->reflection->newMethodFromCallable($callable), $arguments
-        ));
+        try {
+            return call_user_func_array($callable, $this->reflection->processMethodArguments(
+                $this, $this->reflection->newMethodFromCallable($callable), $arguments
+            ));
+        } catch (Throwable $e) {
+            throw DIException::from($e);
+        }
     }
 
+    /**
+     * Creates a new instance of a class. Builds the graph of objects that make up the application.
+     * It can also inject already created dependencies behind the scenes (ex. with singleton and share).
+     *
+     * @param string $class     FQCN
+     * @param array  $arguments [optional] The arguments for the class constructor.
+     *                          They have top precedence over the shared dependencies
+     *
+     * @return object|callable|null
+     * @throws ContainerExceptionInterface
+     */
     public function inject(string $class, array $arguments = []): ?object
     {
         $binding = $this->getFromBindings($class);
-
         if (isset($this->inProgress[$binding])) {
             throw DIException::forCircularDependency($binding);
         }
@@ -78,28 +122,61 @@ final class DIContainer implements ContainerInterface
         }
     }
 
+    /**
+     * Create once and share an object throughout the application lifecycle.
+     * Internally the object is immutable, but it can be replaced with share() method.
+     *
+     * @param string $class     FQCN
+     * @param array  $arguments [optional] See inject() description
+     *
+     * @return object
+     */
     public function singleton(string $class, array $arguments = []): object
     {
         $binding = $this->getFromBindings($class);
-
         if (isset($this->singletons[$binding])) {
             return $this->singletons[$binding];
         }
-
         return $this->singletons[$class] = $this->inject($class, $arguments);
     }
 
-    public function share(object $instance): DIContainer
+    /**
+     * Share already created instance of an object throughout the app lifecycle.
+     *
+     * @param object $instance        The object that will be shared as dependency
+     * @param array  $excludedClasses [optional] A list of FQCN that should
+     *                                be excluded from injecting this instance.
+     *                                In this case a new object will be created and
+     *                                injected for these classes
+     *
+     * @return DIContainer
+     */
+    public function share(object $instance, array $excludedClasses = []): DIContainer
     {
-        $this->singletons[get_class($instance)] = $instance;
+        $class                    = get_class($instance);
+        $this->singletons[$class] = $instance;
 
+        foreach ($excludedClasses as $exclude) {
+            $this->exclude[$exclude][$class] = $class;
+        }
         return $this;
     }
 
+    /**
+     * Binds the interface to concrete class implementation.
+     * It does not create objects, but prepares the container for dependency injection.
+     *
+     * This method should be used in the app modules (DIModule).
+     *
+     * @param string $interface FQN of the interface
+     * @param string $class     FQCN of the concrete class implementation
+     *
+     * @return DIContainer
+     */
     public function bind(string $interface, string $class): DIContainer
     {
-        $this->assertEmpty($class, 'class');
-        $this->assertEmpty($interface, 'interface');
+        assert(false === empty($class), 'Dependency name for bind() method');
+        assert(false === empty($class), 'Class name for bind() method');
 
         if ('$' === $class[0]) {
             $this->bindings[$interface] = $interface;
@@ -108,10 +185,17 @@ final class DIContainer implements ContainerInterface
             $this->bindings[$interface] = $class;
             $this->bindings[$class]     = $class;
         }
-
         return $this;
     }
 
+    /**
+     * Shares an object globally by argument name.
+     *
+     * @param string $name  The name of the argument
+     * @param mixed  $value The actual value
+     *
+     * @return DIContainer
+     */
     public function named(string $name, $value): DIContainer
     {
         if (1 !== preg_match('/\$[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*/', $name)) {
@@ -129,6 +213,7 @@ final class DIContainer implements ContainerInterface
         return [
             self::SINGLETONS => $this->singletons,
             self::BINDINGS   => $this->bindings,
+            self::EXCLUDE    => $this->exclude,
             self::NAMED      => $this->named,
         ];
     }
@@ -138,7 +223,7 @@ final class DIContainer implements ContainerInterface
      */
     public function has($id): bool
     {
-        $this->assertEmpty($id, 'dependency');
+        assert(false === empty($id), 'Dependency name for has() method');
         return isset($this->bindings[$id]) || isset($this->named[$id]);
     }
 
@@ -163,20 +248,13 @@ final class DIContainer implements ContainerInterface
             $this->bindings[$class] = $class;
             return $this->reflection->newInstance($this, $class, $arguments);
         } catch (Throwable $e) {
-            throw $e;
+            throw DIException::from($e);
         }
     }
 
     private function getFromBindings(string $dependency): string
     {
-        $this->assertEmpty($dependency, 'class/interface');
+        assert(false === empty($dependency), 'Dependency name for class/interface');
         return $this->bindings[$dependency] ?? $dependency;
-    }
-
-    private function assertEmpty(string $value, string $type): void
-    {
-        if (empty($value)) {
-            throw DIException::forEmptyName($type);
-        }
     }
 }
