@@ -75,7 +75,7 @@ final class DIReflector
             if (!$param instanceof ReflectionParameter) {
                 continue;
             }
-            $args[$i] = $this->getFromParameterType($container, $param);
+            $args[$i] = $this->getFromParameterType($container, $param, $arguments);
         }
 
         return $args;
@@ -104,7 +104,7 @@ final class DIReflector
         }
     }
 
-    private function getFromParameterType(DIContainer $container, ReflectionParameter $parameter)
+    private function getFromParameterType(DIContainer $container, ReflectionParameter $parameter, array $arguments)
     {
         if (!$dependency = $parameter->getClass()) {
             return $arguments[$parameter->getPosition()]
