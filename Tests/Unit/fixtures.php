@@ -110,7 +110,7 @@ class TestClassForInvokeMethod
         $this->value = $value;
     }
 
-    public static function value($value)
+    public static function value(string $value)
     {
         return $value;
     }
@@ -226,7 +226,7 @@ class TestClassWithNonPublicConstructor
     }
 }
 
-class TestChildClassWithNonPublicConstructor extends TestClassWithNonPublicConstructor
+class TestChildClassAndParentWithNonPublicConstructor extends TestClassWithNonPublicConstructor
 {
     public function __construct()
     {
@@ -240,3 +240,37 @@ abstract class TestAbstractClass
     }
 }
 
+class TestClassA
+{
+    public $b, $c;
+
+    public function __construct(TestClassB $b, TestClassC $c)
+    {
+        $this->b = $b;
+        $this->c = $c;
+    }
+}
+
+class TestClassB
+{
+    public $d;
+
+    public function __construct(TestClassD $d)
+    {
+        $this->d = $d;
+    }
+}
+
+class TestClassC
+{
+    public $d;
+
+    public function __construct(TestClassD $d)
+    {
+        $this->d = $d;
+    }
+}
+
+class TestClassD
+{
+}

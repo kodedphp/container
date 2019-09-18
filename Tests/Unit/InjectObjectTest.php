@@ -3,7 +3,7 @@
 namespace Koded\Tests\Unit;
 
 use ArrayObject;
-use Koded\{DIContainer, DIException};
+use Koded\DIContainer;
 use PDO;
 
 class InjectObjectTest extends DITestCase
@@ -11,8 +11,8 @@ class InjectObjectTest extends DITestCase
     public function testInjectOnDemand()
     {
         $this->assertNotSame(
-            $this->di->inject(TestChildClassWithNonPublicConstructor::class),
-            $this->di->inject(TestChildClassWithNonPublicConstructor::class),
+            $this->di->inject(TestChildClassAndParentWithNonPublicConstructor::class),
+            $this->di->inject(TestChildClassAndParentWithNonPublicConstructor::class),
             'Injecting the same class always yields a new instance'
         );
     }
@@ -29,14 +29,6 @@ class InjectObjectTest extends DITestCase
         $instance = $this->di->inject(TestClassWithConstructorArguments::class);
 
         $this->assertInstanceOf(TestClassWithConstructorArguments::class, $instance);
-    }
-
-    public function testChildClassWithInterfaceWithoutMapping()
-    {
-        $this->expectException(DIException::class);
-        $this->expectExceptionCode(DIException::E_CANNOT_INSTANTIATE);
-
-        $this->di->inject(TestClassWithConstructorInterfaceDependency::class);
     }
 
     public function testChildClassWithInterfaceWithMapping()
@@ -60,11 +52,11 @@ class InjectObjectTest extends DITestCase
         $this->assertSame(FILE_APPEND, $instance->g);
     }
 
-    public function testChildClassWithNonPublicConstructor()
+    public function testChildClassAndParentWithWithNonPublicConstructor()
     {
         $this->assertInstanceOf(
-            TestChildClassWithNonPublicConstructor::class,
-            $this->di->inject(TestChildClassWithNonPublicConstructor::class)
+            TestChildClassAndParentWithNonPublicConstructor::class,
+            $this->di->inject(TestChildClassAndParentWithNonPublicConstructor::class)
         );
     }
 

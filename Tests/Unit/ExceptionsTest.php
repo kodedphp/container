@@ -7,14 +7,6 @@ use Psr\Container\NotFoundExceptionInterface;
 
 class ExceptionsTest extends DITestCase
 {
-    public function testForInvalidClassName()
-    {
-        $this->expectException(DIException::class);
-        $this->expectExceptionCode(DIException::E_EMPTY_NAME);
-
-        $this->di->inject('');
-    }
-
     public function testForCircularDependency()
     {
         $this->expectException(DIException::class);
@@ -61,11 +53,19 @@ class ExceptionsTest extends DITestCase
         $this->di->inject(TestAbstractClass::class, ['arg1', 'arg2']);
     }
 
-    public function testForCloningNotAllowed()
+    public function testChildClassWithInterfaceWithoutMapping()
     {
         $this->expectException(DIException::class);
-        $this->expectExceptionCode(DIException::E_CLONING_NOT_ALLOWED);
-        clone $this->di;
+        $this->expectExceptionCode(DIException::E_CANNOT_INSTANTIATE);
+
+        $this->di->inject(TestClassWithConstructorInterfaceDependency::class);
+    }
+
+    public function testMissingParameterForBuiltinParameterType()
+    {
+        $this->expectException(DIException::class);
+        $this->expectExceptionCode(DIException::E_MISSING_ARGUMENT);
+        ($this->di)([TestClassForInvokeMethod::class, 'value']);
     }
 
     public function testForPsr11GetMethod()
