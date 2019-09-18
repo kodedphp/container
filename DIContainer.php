@@ -78,7 +78,6 @@ final class DIContainer implements ContainerInterface
     public function __destruct()
     {
         $this->reflection = null;
-
         $this->singletons = [];
         $this->bindings   = [];
         $this->exclude    = [];
