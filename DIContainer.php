@@ -97,7 +97,7 @@ final class DIContainer implements ContainerInterface
 
     /**
      * Creates a new instance of a class. Builds the graph of objects that make up the application.
-     * It can also inject already created dependencies behind the scenes (ex. with singleton and share).
+     * It can also inject already created dependencies behind the scenes (with singleton and share).
      *
      * @param string $class     FQCN
      * @param array  $arguments [optional] The arguments for the class constructor.
@@ -106,7 +106,7 @@ final class DIContainer implements ContainerInterface
      * @return object|callable|null
      * @throws ContainerExceptionInterface
      */
-    public function inject(string $class, array $arguments = []): ?object
+    public function new(string $class, array $arguments = []): ?object
     {
         $binding = $this->getFromBindings($class);
         if (isset($this->inProgress[$binding])) {
@@ -126,7 +126,7 @@ final class DIContainer implements ContainerInterface
      * Internally the object is immutable, but it can be replaced with share() method.
      *
      * @param string $class     FQCN
-     * @param array  $arguments [optional] See inject() description
+     * @param array  $arguments [optional] See new() description
      *
      * @return object
      */
@@ -136,7 +136,7 @@ final class DIContainer implements ContainerInterface
         if (isset($this->singletons[$binding])) {
             return $this->singletons[$binding];
         }
-        return $this->singletons[$class] = $this->inject($class, $arguments);
+        return $this->singletons[$class] = $this->new($class, $arguments);
     }
 
     /**
@@ -238,7 +238,7 @@ final class DIContainer implements ContainerInterface
         $dependency = $this->getFromBindings($id);
         return $this->singletons[$dependency]
             ?? $this->named[$dependency]
-            ?? $this->inject($dependency);
+            ?? $this->new($dependency);
     }
 
     private function newInstance(string $class, array $arguments): object

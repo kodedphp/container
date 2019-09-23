@@ -11,7 +11,7 @@ class BindMethodTest extends DITestCase
         $this->di->named('$arg', 'foobar');
         $this->di->bind(TestClassWithPrimitiveConstructorArgument::class, '$arg');
 
-        $obj = $this->di->inject(TestClassWithPrimitiveConstructorArgument::class);
+        $obj = $this->di->new(TestClassWithPrimitiveConstructorArgument::class);
 
         $this->assertInstanceOf(TestClassWithPrimitiveConstructorArgument::class, $obj);
         $this->assertSame('foobar', $obj->arg);

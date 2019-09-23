@@ -10,21 +10,21 @@ class WiringAndInjectionTest extends DITestCase
     public function testWithSingleton()
     {
         $this->di->singleton(PDO::class, ['sqlite:']);
-        $dispatcher = $this->di->inject(PostCommandDispatcher::class, ['hello']);
+        $dispatcher = $this->di->new(PostCommandDispatcher::class, ['hello']);
         $this->assert($dispatcher);
     }
 
     public function testWithNamedValueParameter()
     {
         $this->di->named('$dsn', 'sqlite:');
-        $dispatcher = $this->di->inject(PostCommandDispatcher::class, ['hello']);
+        $dispatcher = $this->di->new(PostCommandDispatcher::class, ['hello']);
         $this->assert($dispatcher);
     }
 
     public function testWithNamedInstanceParameter()
     {
         $this->di->named('$pdo', new PDO('sqlite:'));
-        $dispatcher = $this->di->inject(PostCommandDispatcher::class, ['hello']);
+        $dispatcher = $this->di->new(PostCommandDispatcher::class, ['hello']);
         $this->assert($dispatcher);
     }
 

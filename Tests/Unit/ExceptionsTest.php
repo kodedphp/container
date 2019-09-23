@@ -12,7 +12,7 @@ class ExceptionsTest extends DITestCase
         $this->expectException(DIException::class);
         $this->expectExceptionCode(DIException::E_CIRCULAR_DEPENDENCY);
 
-        $this->di->inject(TestCircularDependencyA::class);
+        $this->di->new(TestCircularDependencyA::class);
     }
 
     public function testInvokeMethodForInvalidMethod()
@@ -26,7 +26,7 @@ class ExceptionsTest extends DITestCase
         $this->expectException(DIException::class);
         $this->expectExceptionCode(DIException::E_NON_PUBLIC_METHOD);
 
-        $this->di->inject(TestClassWithNonPublicConstructor::class);
+        $this->di->new(TestClassWithNonPublicConstructor::class);
     }
 
     public function testForInstantiatingInterface()
@@ -34,7 +34,7 @@ class ExceptionsTest extends DITestCase
         $this->expectException(DIException::class);
         $this->expectExceptionCode(DIException::E_CANNOT_INSTANTIATE);
 
-        $this->di->inject(TestInterface::class);
+        $this->di->new(TestInterface::class);
     }
 
     public function testForAbstractClass()
@@ -42,7 +42,7 @@ class ExceptionsTest extends DITestCase
         $this->expectException(DIException::class);
         $this->expectExceptionCode(DIException::E_CANNOT_INSTANTIATE);
 
-        $this->di->inject(TestAbstractClass::class);
+        $this->di->new(TestAbstractClass::class);
     }
 
     public function testForAbstractClassWithArguments()
@@ -50,7 +50,7 @@ class ExceptionsTest extends DITestCase
         $this->expectException(DIException::class);
         $this->expectExceptionCode(DIException::E_CANNOT_INSTANTIATE);
 
-        $this->di->inject(TestAbstractClass::class, ['arg1', 'arg2']);
+        $this->di->new(TestAbstractClass::class, ['arg1', 'arg2']);
     }
 
     public function testChildClassWithInterfaceWithoutMapping()
@@ -58,7 +58,7 @@ class ExceptionsTest extends DITestCase
         $this->expectException(DIException::class);
         $this->expectExceptionCode(DIException::E_CANNOT_INSTANTIATE);
 
-        $this->di->inject(TestClassWithConstructorInterfaceDependency::class);
+        $this->di->new(TestClassWithConstructorInterfaceDependency::class);
     }
 
     public function testMissingParameterForBuiltinParameterType()

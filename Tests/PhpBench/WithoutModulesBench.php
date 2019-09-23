@@ -17,7 +17,7 @@ class WithoutModulesBench extends AbstractBench
     public function benchInject()
     {
         $this->di->bind(TestInterface::class, TestClassWithInterfaceAndNoConstructor::class);
-        $this->di->inject(TestClassWithConstructorInterfaceDependency::class);
+        $this->di->new(TestClassWithConstructorInterfaceDependency::class);
     }
 
     /**

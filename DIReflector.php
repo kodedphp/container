@@ -120,7 +120,7 @@ final class DIReflector
             return $parameter->getDefaultValue();
         }
 
-        return $container->inject($dependency->name);
+        return $container->new($dependency->name);
     }
 
     private function getFromParameter(DIContainer $container, ReflectionParameter $parameter)
@@ -130,7 +130,7 @@ final class DIReflector
 
         if (isset($storage[DIContainer::EXCLUDE][$name])) {
             if (array_intersect($storage[DIContainer::EXCLUDE][$name], array_keys($storage[DIContainer::SINGLETONS]))) {
-                return (clone $container)->inject($name);
+                return (clone $container)->new($name);
             }
         }
 

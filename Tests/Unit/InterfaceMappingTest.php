@@ -16,7 +16,7 @@ class InterfaceMappingTest extends DITestCase
 {
     public function testImplementedInterfaces()
     {
-        $shared = $this->di->inject(TestClassWithConstructorArguments::class, [new PDO('sqlite:')]);
+        $shared = $this->di->new(TestClassWithConstructorArguments::class, [new PDO('sqlite:')]);
         $this->di->share($shared);
 
         $this->assertFalse($this->di->has(JsonSerializable::class), 'JsonSerializable interface is not mapped to the class');
@@ -25,7 +25,7 @@ class InterfaceMappingTest extends DITestCase
 
     public function testInterfacesFromParent()
     {
-        $shared = $this->di->inject(TestClassWithoutConstructorArguments::class);
+        $shared = $this->di->new(TestClassWithoutConstructorArguments::class);
         $this->di->share($shared);
 
         $this->assertFalse(

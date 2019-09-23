@@ -11,7 +11,7 @@ class ShareMethodTest extends DITestCase
         $actual = $this->di->get(TestClassWithConstructorInterfaceDependency::class);
         $this->assertInstanceOf(TestClassWithConstructorInterfaceDependency::class, $actual);
 
-        $new = $this->di->inject(TestClassWithConstructorInterfaceDependency::class);
+        $new = $this->di->new(TestClassWithConstructorInterfaceDependency::class);
         $this->di->share($new);
 
         $this->assertNotSame($new, $actual,

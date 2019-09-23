@@ -17,7 +17,7 @@ class WithModulesBench extends AbstractBench
      */
     public function benchInject()
     {
-        $this->di->inject(TestClassWithConstructorInterfaceDependency::class);
+        $this->di->new(TestClassWithConstructorInterfaceDependency::class);
     }
 
     /**

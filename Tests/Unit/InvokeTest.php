@@ -8,7 +8,7 @@ class InvokeTest extends DITestCase
 {
     public function testInvokeMethod()
     {
-        $instance = $this->di->inject(TestClassForInvokeMethod::class, ['initial value']);
+        $instance = $this->di->new(TestClassForInvokeMethod::class, ['initial value']);
 
         $this->assertSame('initial value', ($this->di)([$instance, 'get']));
         $this->assertSame('from arguments', ($this->di)([$instance, 'get'], ['from arguments']));
