@@ -60,7 +60,7 @@ final class DIReflector
         try {
             $name = $method->getDeclaringClass()->name;
         } catch (Throwable $e) {
-            $name = $method->getNamespaceName() ?: $method->getName();
+            $name = $method->getNamespaceName() ?: $method->name;
         }
 
         $args = array_replace($method->getParameters(), $arguments);
@@ -127,6 +127,10 @@ final class DIReflector
     {
         $storage = $container->getStorage();
         $name    = ($parameter->getClass() ?: $parameter)->name;
+
+        if (isset($storage[DIContainer::BINDINGS][$name])) {
+            $name = $storage[DIContainer::BINDINGS][$name];
+        }
 
         if (isset($storage[DIContainer::EXCLUDE][$name])) {
             if (array_intersect($storage[DIContainer::EXCLUDE][$name], array_keys($storage[DIContainer::SINGLETONS]))) {

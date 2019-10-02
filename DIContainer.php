@@ -30,9 +30,9 @@ interface DIModule
      *
      * ex: `$injector->bind(MyInterface::class, MyImplementation::class);`
      *
-     * @param DIContainer $injector
+     * @param DIContainer $container
      */
-    public function configure(DIContainer $injector): void;
+    public function configure(DIContainer $container): void;
 }
 
 /**
@@ -143,20 +143,23 @@ final class DIContainer implements ContainerInterface
      * Share already created instance of an object throughout the app lifecycle.
      *
      * @param object $instance        The object that will be shared as dependency
-     * @param array  $excludedClasses [optional] A list of FQCN that should
+     * @param array  $exclude         [optional] A list of FQCN that should
      *                                be excluded from injecting this instance.
      *                                In this case a new object will be created and
      *                                injected for these classes
      *
      * @return DIContainer
      */
-    public function share(object $instance, array $excludedClasses = []): DIContainer
+    public function share(object $instance, array $exclude = []): DIContainer
     {
-        $class                    = get_class($instance);
-        $this->singletons[$class] = $instance;
+        $class = get_class($instance);
+        $this->bindnterface($instance, $class);
 
-        foreach ($excludedClasses as $exclude) {
-            $this->exclude[$exclude][$class] = $class;
+        $this->singletons[$class] = $instance;
+        $this->bindings[$class]   = $class;
+
+        foreach ($exclude as $name) {
+            $this->exclude[$name][$class] = $class;
         }
         return $this;
     }
@@ -168,21 +171,21 @@ final class DIContainer implements ContainerInterface
      * This method should be used in the app modules (DIModule).
      *
      * @param string $interface FQN of the interface
-     * @param string $class     FQCN of the concrete class implementation
+     * @param string $class     FQCN of the concrete class implementation,
+     *                          or empty value for deferred binding
      *
      * @return DIContainer
      */
-    public function bind(string $interface, string $class): DIContainer
+    public function bind(string $interface, string $class = ''): DIContainer
     {
-        assert(false === empty($class), 'Dependency name for bind() method');
-        assert(false === empty($class), 'Class name for bind() method');
+        assert(false === empty($interface), 'Dependency name for bind() method');
 
-        if ('$' === $class[0]) {
+        if ('$' === ($class[0] ?? null)) {
             $this->bindings[$interface] = $interface;
-            $this->bindings[$class]     = $interface;
+            $class && $this->bindings[$class] = $interface;
         } else {
-            $this->bindings[$interface] = $class;
-            $this->bindings[$class]     = $class;
+            $this->bindings[$interface] = $class ?: $interface;
+            $class && $this->bindings[$class] = $class;
         }
         return $this;
     }
@@ -255,5 +258,15 @@ final class DIContainer implements ContainerInterface
     {
         assert(false === empty($dependency), 'Dependency name for class/interface');
         return $this->bindings[$dependency] ?? $dependency;
+    }
+
+    private function bindnterface(object $dependency, string $class): void
+    {
+        foreach (class_implements($dependency) as $interface) {
+            if (isset($this->bindings[$interface])) {
+                $this->bindings[$interface] = $class;
+                break;
+            }
+        }
     }
 }
