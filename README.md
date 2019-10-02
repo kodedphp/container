@@ -7,7 +7,6 @@ Dependency Injection Container - Koded
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/kodedphp/container/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/kodedphp/container/?branch=master)
 [![Infection MSI](https://badge.stryker-mutator.io/github.com/kodedphp/container/master)](https://github.com/kodedphp/container)
 [![Minimum PHP Version: 7.2](https://img.shields.io/badge/php-%3E%3D%207.2-8892BF.svg)](https://php.net/)
-[![Software license](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](LICENSE)
 
 
 `koded/container` is a SOLID OOP application bootstrapping and wiring library.
@@ -121,3 +120,8 @@ $response = (new DIContainer(new BlogModule))([$resolvedDispatcher, $resolvedMet
 ```
 
 > To be continued...
+
+License
+-------
+[![Software license](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](LICENSE)
+The code is distributed under the terms of [The 3-Clause BSD license](LICENSE).
