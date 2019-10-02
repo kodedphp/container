@@ -19,7 +19,7 @@ use Throwable;
  * Interface DIModule contributes the application configuration,
  * typically the interface binding which are used to inject the dependencies.
  *
- * The application is composed of a set of DIModule(s) and some bootstrapping code.
+ * The application is composed of a set of DIModules and some bootstrapping code.
  */
 interface DIModule
 {
@@ -28,7 +28,7 @@ interface DIModule
      * Also reduces the repetition and results in a more readable configuration.
      * Implement the `configure()` method to bind your interfaces.
      *
-     * ex: `$injector->bind(MyInterface::class, MyImplementation::class);`
+     * ex: `$container->bind(MyInterface::class, MyImplementation::class);`
      *
      * @param DIContainer $container
      */
@@ -36,9 +36,9 @@ interface DIModule
 }
 
 /**
- * The entry point of the DIContainer that dwars the lines between the
+ * The entry point of the DIContainer that draws the lines between the
  * APIs, implementation of these APIs, modules that configure these
- * implementations and applications that consist of of a collection of modules.
+ * implementations and applications that consist of a collection of modules.
  *
  * ```
  * $container = new DIContainer(new ModuleA, new ModuleB, ... new ModuleZ);
@@ -97,7 +97,7 @@ final class DIContainer implements ContainerInterface
 
     /**
      * Creates a new instance of a class. Builds the graph of objects that make up the application.
-     * It can also inject already created dependencies behind the scenes (with singleton and share).
+     * It can also inject already created dependencies behind the scene (with singleton and share).
      *
      * @param string $class     FQCN
      * @param array  $arguments [optional] The arguments for the class constructor.
@@ -143,9 +143,9 @@ final class DIContainer implements ContainerInterface
      * Share already created instance of an object throughout the app lifecycle.
      *
      * @param object $instance        The object that will be shared as dependency
-     * @param array  $exclude         [optional] A list of FQCN that should
+     * @param array  $exclude         [optional] A list of FQCNs that should
      *                                be excluded from injecting this instance.
-     *                                In this case a new object will be created and
+     *                                In this case, a new object will be created and
      *                                injected for these classes
      *
      * @return DIContainer
@@ -153,7 +153,7 @@ final class DIContainer implements ContainerInterface
     public function share(object $instance, array $exclude = []): DIContainer
     {
         $class = get_class($instance);
-        $this->bindnterface($instance, $class);
+        $this->bindInterface($instance, $class);
 
         $this->singletons[$class] = $instance;
         $this->bindings[$class]   = $class;
@@ -260,7 +260,7 @@ final class DIContainer implements ContainerInterface
         return $this->bindings[$dependency] ?? $dependency;
     }
 
-    private function bindnterface(object $dependency, string $class): void
+    private function bindInterface(object $dependency, string $class): void
     {
         foreach (class_implements($dependency) as $interface) {
             if (isset($this->bindings[$interface])) {
