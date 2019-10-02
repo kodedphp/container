@@ -17,6 +17,13 @@ class BindMethodTest extends DITestCase
         $this->assertSame('foobar', $obj->arg);
     }
 
+    public function testDeferredBindingWithShareMethod()
+    {
+        $this->di->bind(TestInterface::class);
+        $this->di->share(new TestClassWithInterfaceAndNoConstructor);
+        $this->assertTrue($this->di->has(TestClassWithInterfaceAndNoConstructor::class));
+    }
+
     protected function createContainer(): DIContainer
     {
         return new DIContainer;

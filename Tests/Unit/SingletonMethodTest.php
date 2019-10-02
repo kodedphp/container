@@ -16,7 +16,6 @@ class SingletonMethodTest extends DITestCase
 
     public function testSingletonCreateWithInjectMethod()
     {
-//        $this->markTestIncomplete('Clarify the behavior of inject()');
         $singleton = $this->di->singleton(TestClassWithInterfaceAndNoConstructor::class);
         $other     = $this->di->new(TestClassWithInterfaceAndNoConstructor::class);
 

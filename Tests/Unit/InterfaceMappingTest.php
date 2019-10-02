@@ -2,16 +2,14 @@
 
 namespace Koded\Tests\Unit;
 
+use ArrayAccess;
 use Countable;
 use JsonSerializable;
 use Koded\DIContainer;
-use Koded\Stdlib\Interfaces\ArrayDataFilter;
 use PDO;
+use SeekableIterator;
+use Serializable;
 
-/**
- * @since v1.2.0 Validate from previous implementation:
- *        - Interface mapping and binding is removed
- */
 class InterfaceMappingTest extends DITestCase
 {
     public function testImplementedInterfaces()
@@ -29,10 +27,14 @@ class InterfaceMappingTest extends DITestCase
         $this->di->share($shared);
 
         $this->assertFalse(
-            $this->di->has(ArrayDataFilter::class),
-            'TestClassWithoutConstructorArguments extends Config, which also implements ArrayDataFilter interface,
-            therefore the parent interfaces are NOT bound to this class instance'
+            $this->di->has(SeekableIterator::class),
+            'TestClassWithoutConstructorArguments extends ArrayIterator, which also implements SeekableIterator interface.
+            The parent interfaces should NOT be bounded to this class instance'
         );
+
+        $this->assertFalse($this->di->has(ArrayAccess::class));
+        $this->assertFalse($this->di->has(Serializable::class));
+        $this->assertFalse($this->di->has(Countable::class));
     }
 
     protected function createContainer(): DIContainer

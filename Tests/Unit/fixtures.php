@@ -2,10 +2,10 @@
 
 namespace Koded\Tests\Unit;
 
+use ArrayIterator;
 use Countable;
 use Exception;
 use JsonSerializable;
-use Koded\Stdlib\Config;
 use PDO;
 
 interface PostRepository
@@ -74,7 +74,6 @@ class PostService
     {
         $post = $this->post->findBySlug($slug);
         $user = $this->user->findById($post[0]);
-        // ... do something with the results
         return [$user, $post];
     }
 }
@@ -141,8 +140,12 @@ class TestClassWithConstructorArguments implements JsonSerializable, Countable
     }
 }
 
-class TestClassWithoutConstructorArguments extends Config
+class TestClassWithoutConstructorArguments extends ArrayIterator
 {
+    public function __construct()
+    {
+        parent::__construct([]);
+    }
 }
 
 class TestClassWithInterfaceAndNoConstructor implements TestInterface
