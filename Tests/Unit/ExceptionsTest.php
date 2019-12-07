@@ -3,6 +3,7 @@
 namespace Koded\Tests\Unit;
 
 use Koded\{DIContainer, DIException};
+use OutOfBoundsException;
 use Psr\Container\NotFoundExceptionInterface;
 
 class ExceptionsTest extends DITestCase
@@ -73,6 +74,14 @@ class ExceptionsTest extends DITestCase
         $this->expectException(NotFoundExceptionInterface::class);
         $this->expectExceptionCode(DIException::E_INSTANCE_NOT_FOUND);
         $this->di->get('Fubar');
+    }
+
+    public function testExceptionForInvokeMethod()
+    {
+        $this->expectException(OutOfBoundsException::class);
+        $this->expectExceptionCode(400);
+        $this->expectExceptionMessage('out of bounds');
+        ($this->di)([TestExceptionForInvokeMethod::class, 'fail']);
     }
 
     protected function createContainer(): DIContainer

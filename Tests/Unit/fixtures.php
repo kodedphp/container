@@ -6,6 +6,7 @@ use ArrayIterator;
 use Countable;
 use Exception;
 use JsonSerializable;
+use OutOfBoundsException;
 use PDO;
 
 interface PostRepository
@@ -240,6 +241,14 @@ abstract class TestAbstractClass
 {
     public function __construct()
     {
+    }
+}
+
+class TestExceptionForInvokeMethod
+{
+    public function fail()
+    {
+        throw new OutOfBoundsException('out of bounds', 400);
     }
 }
 
