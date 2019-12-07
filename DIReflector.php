@@ -28,21 +28,19 @@ final class DIReflector
         $dependency  = new ReflectionClass($class);
         $constructor = $dependency->getConstructor();
 
-        if (false === $dependency->isInstantiable()) {
-            if (null !== $constructor && false === $constructor->isPublic()) {
-                throw DIException::forNonPublicMethod($constructor->getDeclaringClass()->name . '::' . $constructor->name);
-            }
-
-            throw DIException::cannotInstantiate(
-                $dependency->name, $dependency->isInterface() ? 'interface' : 'abstract class'
-            );
+        if ($dependency->isInstantiable()) {
+            return $constructor
+                ? new $class(...$this->processMethodArguments($container, $constructor, $arguments))
+                : new $class;
         }
 
-        if (null === $constructor) {
-            return new $class;
+        if (null !== $constructor && false === $constructor->isPublic()) {
+            throw DIException::forNonPublicMethod($constructor->getDeclaringClass()->name . '::' . $constructor->name);
         }
 
-        return new $class(...$this->processMethodArguments($container, $constructor, $arguments));
+        throw DIException::cannotInstantiate(
+            $dependency->name, $dependency->isInterface() ? 'interface' : 'abstract class'
+        );
     }
 
     /**
