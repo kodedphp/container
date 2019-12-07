@@ -9,7 +9,7 @@ Dependency Injection Container - Koded
 [![Minimum PHP Version: 7.2](https://img.shields.io/badge/php-%3E%3D%207.2-8892BF.svg)](https://php.net/)
 
 
-`koded/container` is a SOLID OOP application bootstrapping and wiring library.
+`koded/container` is an OOP application bootstrapping and wiring library.
 In other words, `Koded\DIContainer` implements a **design pattern** called **Dependency Injection**.
 The main principle of DIP is to separate the behavior from dependency resolution.
 
@@ -92,14 +92,14 @@ class HttpPostHandler {
 This is the bootstrapping / wiring application module
 ```php
 class BlogModule implements DIModule {
-    public function configure(DIContainer $injector): void {
+    public function configure(DIContainer $container): void {
         // bind interfaces to concrete class implementations
-        $injector->bind(PostRepository::class, DatabasePostRepository::class);
-        $injector->bind(UserRepository::class, DatabaseUserRepository::class);
-        $injector->bind(ServerRequestInterface::class, /*some PSR-7 server request class name*/);
+        $container->bind(PostRepository::class, DatabasePostRepository::class);
+        $container->bind(UserRepository::class, DatabaseUserRepository::class);
+        $container->bind(ServerRequestInterface::class, /*some PSR-7 server request class name*/);
         
         // share one PDO instance
-        $injector->singleton(PDO::class, ['sqlite:database.db']);
+        $container->singleton(PDO::class, ['sqlite:database.db']);
     }
 }
 ```
@@ -119,9 +119,17 @@ $response = (new DIContainer(new BlogModule))([$resolvedDispatcher, $resolvedMet
 // ex. `echo $response->getBody()->getContents();`
 ```
 
+The container implements the [__invoke()][invoke] method, so the instance can be used as a function:
+```php
+$container('method', 'arguments');
+```
+
 > To be continued...
 
 License
 -------
 [![Software license](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](LICENSE)
 The code is distributed under the terms of [The 3-Clause BSD license](LICENSE).
+
+
+[invoke]: https://php.net/manual/en/language.oop5.magic.php#object.invoke
