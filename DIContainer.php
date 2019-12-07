@@ -86,13 +86,9 @@ final class DIContainer implements ContainerInterface
 
     public function __invoke(callable $callable, array $arguments = [])
     {
-        try {
-            return call_user_func_array($callable, $this->reflection->processMethodArguments(
-                $this, $this->reflection->newMethodFromCallable($callable), $arguments
-            ));
-        } catch (Throwable $e) {
-            throw DIException::from($e);
-        }
+        return call_user_func_array($callable, $this->reflection->processMethodArguments(
+            $this, $this->reflection->newMethodFromCallable($callable), $arguments
+        ));
     }
 
     /**
@@ -108,7 +104,7 @@ final class DIContainer implements ContainerInterface
      */
     public function new(string $class, array $arguments = []): ?object
     {
-        $binding = $this->getFromBindings($class);
+        $binding = $this->getNameFromBindings($class);
         if (isset($this->inProgress[$binding])) {
             throw DIException::forCircularDependency($binding);
         }
@@ -132,7 +128,7 @@ final class DIContainer implements ContainerInterface
      */
     public function singleton(string $class, array $arguments = []): object
     {
-        $binding = $this->getFromBindings($class);
+        $binding = $this->getNameFromBindings($class);
         if (isset($this->singletons[$binding])) {
             return $this->singletons[$binding];
         }
@@ -153,7 +149,7 @@ final class DIContainer implements ContainerInterface
     public function share(object $instance, array $exclude = []): DIContainer
     {
         $class = get_class($instance);
-        $this->bindInterface($instance, $class);
+        $this->bindInterfaces($instance, $class);
 
         $this->singletons[$class] = $instance;
         $this->bindings[$class]   = $class;
@@ -238,7 +234,7 @@ final class DIContainer implements ContainerInterface
             throw DIInstanceNotFound::for($id);
         }
 
-        $dependency = $this->getFromBindings($id);
+        $dependency = $this->getNameFromBindings($id);
         return $this->singletons[$dependency]
             ?? $this->named[$dependency]
             ?? $this->new($dependency);
@@ -246,21 +242,17 @@ final class DIContainer implements ContainerInterface
 
     private function newInstance(string $class, array $arguments): object
     {
-        try {
-            $this->bindings[$class] = $class;
-            return $this->reflection->newInstance($this, $class, $arguments);
-        } catch (Throwable $e) {
-            throw DIException::from($e);
-        }
+        $this->bindings[$class] = $class;
+        return $this->reflection->newInstance($this, $class, $arguments);
     }
 
-    private function getFromBindings(string $dependency): string
+    private function getNameFromBindings(string $dependency): string
     {
         assert(false === empty($dependency), 'Dependency name for class/interface');
         return $this->bindings[$dependency] ?? $dependency;
     }
 
-    private function bindInterface(object $dependency, string $class): void
+    private function bindInterfaces(object $dependency, string $class): void
     {
         foreach (class_implements($dependency) as $interface) {
             if (isset($this->bindings[$interface])) {
