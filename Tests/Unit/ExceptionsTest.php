@@ -81,7 +81,7 @@ class ExceptionsTest extends DITestCase
         $this->expectException(OutOfBoundsException::class);
         $this->expectExceptionCode(400);
         $this->expectExceptionMessage('out of bounds');
-        ($this->di)([TestExceptionForInvokeMethod::class, 'fail']);
+        ($this->di)([new TestExceptionForInvokeMethod, 'fail']);
     }
 
     protected function createContainer(): DIContainer
