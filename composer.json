@@ -36,17 +36,11 @@
     "ext-json": "*",
     "phpunit/phpunit": "~7",
     "infection/infection": "^0.13",
-    "phpbench/phpbench": "@dev",
-    "scrutinizer/ocular": "^1.6"
+    "phpbench/phpbench": "@dev"
   },
   "autoload-dev": {
     "psr-4": {
       "Koded\\Tests\\": "Tests/"
-    }
-  },
-  "extra": {
-    "branch-alias": {
-      "dev-master": "1.x-dev"
     }
   }
 }
