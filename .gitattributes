@@ -7,4 +7,3 @@
 /phpunit.*   export-ignore
 /infection.* export-ignore
 /phpbench.*  export-ignore
-/.*          export-ignore
