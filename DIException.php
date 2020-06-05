@@ -12,28 +12,36 @@
 
 namespace Koded;
 
-use Koded\Exceptions\KodedException;
 use Psr\Container\{ContainerExceptionInterface, NotFoundExceptionInterface};
+use LogicException;
+use Throwable;
 
-class DIException extends KodedException implements ContainerExceptionInterface
+class DIException extends LogicException implements ContainerExceptionInterface
 {
     public const
-        E_CIRCULAR_DEPENDENCY    = 1,
-        E_NON_PUBLIC_METHOD      = 2,
-        E_CANNOT_INSTANTIATE     = 3,
-        E_INVALID_PARAMETER_NAME = 4,
-        E_INSTANCE_NOT_FOUND     = 5,
-        E_MISSING_ARGUMENT       = 6;
+        E_CIRCULAR_DEPENDENCY    = 7001,
+        E_NON_PUBLIC_METHOD      = 7002,
+        E_CANNOT_INSTANTIATE     = 7003,
+        E_INVALID_PARAMETER_NAME = 7004,
+        E_INSTANCE_NOT_FOUND     = 7005,
+        E_MISSING_ARGUMENT       = 7006;
 
     protected $messages = [
         self::E_CIRCULAR_DEPENDENCY    => 'Circular dependency detected while creating an instance for ":class"',
         self::E_NON_PUBLIC_METHOD      => 'Failed to create an instance, because the method ":method" is not public',
-        self::E_CANNOT_INSTANTIATE     => 'Cannot instantiate the ":type" :class',
-        self::E_INVALID_PARAMETER_NAME => 'Provide a valid name for the global parameter',
+        self::E_CANNOT_INSTANTIATE     => 'Cannot instantiate the ":type :class"',
+        self::E_INVALID_PARAMETER_NAME => 'Provide a valid name for the global parameter: ":name"',
         self::E_INSTANCE_NOT_FOUND     => 'The requested instance :id is not found in the container',
         self::E_MISSING_ARGUMENT       => 'Required parameter "$:name" is missing at position :position in :function()',
     ];
 
+    public function __construct(int $code, array $arguments = [], Throwable $previous = null)
+    {
+        parent::__construct(strtr(
+            $this->messages[$code] ?? '[Exception] :message',
+            $arguments + [':message' => $this->message]
+        ), $code, $previous);
+    }
 
     public static function forCircularDependency(string $class): ContainerExceptionInterface
     {
@@ -50,9 +58,9 @@ class DIException extends KodedException implements ContainerExceptionInterface
         return new self(self::E_CANNOT_INSTANTIATE, [':class' => $class, ':type' => $type]);
     }
 
-    public static function forInvalidParameterName(): ContainerExceptionInterface
+    public static function forInvalidParameterName(string $name): ContainerExceptionInterface
     {
-        return new self(self::E_INVALID_PARAMETER_NAME);
+        return new self(self::E_INVALID_PARAMETER_NAME, [':name' => $name]);
     }
 
     public static function forMissingArgument(string $name, int $position, string $function): ContainerExceptionInterface
