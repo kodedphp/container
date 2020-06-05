@@ -38,7 +38,7 @@ class DIException extends LogicException implements ContainerExceptionInterface
     public function __construct(int $code, array $arguments = [], Throwable $previous = null)
     {
         parent::__construct(strtr(
-            $this->messages[$code] ?? '[Exception] :message',
+            $this->messages[$code] ?? ':message',
             $arguments + [':message' => $this->message]
         ), $code, $previous);
     }
