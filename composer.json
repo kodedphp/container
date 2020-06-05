@@ -5,11 +5,11 @@
   "description": "A simple Dependency Injection Container with application modules support",
   "license": "BSD-3-Clause",
   "keywords": [
-    "dic",
     "dependency",
     "injection",
     "container",
-    "psr-11"
+    "psr-11",
+    "dic"
   ],
   "authors": [
     {
@@ -20,7 +20,6 @@
   "prefer-stable": true,
   "require": {
     "php": "^7.2",
-    "koded/stdlib": "~4",
     "psr/container": "~1"
   },
   "autoload": {
@@ -32,19 +31,15 @@
     }
   },
   "require-dev": {
+    "ext-pdo": "*",
+    "ext-json": "*",
     "phpunit/phpunit": "~7",
     "infection/infection": "^0.13",
-    "phpbench/phpbench": "@dev",
-    "scrutinizer/ocular": "^1.6"
+    "phpbench/phpbench": "@dev"
   },
   "autoload-dev": {
     "psr-4": {
       "Koded\\Tests\\": "Tests/"
-    }
-  },
-  "extra": {
-    "branch-alias": {
-      "dev-master": "1.x-dev"
     }
   }
 }

@@ -3,24 +3,17 @@
 namespace Koded\Tests\Unit;
 
 use Koded\{DIContainer, DIException};
+use OutOfBoundsException;
 use Psr\Container\NotFoundExceptionInterface;
 
 class ExceptionsTest extends DITestCase
 {
-    public function testForInvalidClassName()
-    {
-        $this->expectException(DIException::class);
-        $this->expectExceptionCode(DIException::E_EMPTY_NAME);
-
-        $this->di->inject('');
-    }
-
     public function testForCircularDependency()
     {
         $this->expectException(DIException::class);
         $this->expectExceptionCode(DIException::E_CIRCULAR_DEPENDENCY);
 
-        $this->di->inject(TestCircularDependencyA::class);
+        $this->di->new(TestCircularDependencyA::class);
     }
 
     public function testInvokeMethodForInvalidMethod()
@@ -34,7 +27,7 @@ class ExceptionsTest extends DITestCase
         $this->expectException(DIException::class);
         $this->expectExceptionCode(DIException::E_NON_PUBLIC_METHOD);
 
-        $this->di->inject(TestClassWithNonPublicConstructor::class);
+        $this->di->new(TestClassWithNonPublicConstructor::class);
     }
 
     public function testForInstantiatingInterface()
@@ -42,7 +35,7 @@ class ExceptionsTest extends DITestCase
         $this->expectException(DIException::class);
         $this->expectExceptionCode(DIException::E_CANNOT_INSTANTIATE);
 
-        $this->di->inject(TestInterface::class);
+        $this->di->new(TestInterface::class);
     }
 
     public function testForAbstractClass()
@@ -50,7 +43,7 @@ class ExceptionsTest extends DITestCase
         $this->expectException(DIException::class);
         $this->expectExceptionCode(DIException::E_CANNOT_INSTANTIATE);
 
-        $this->di->inject(TestAbstractClass::class);
+        $this->di->new(TestAbstractClass::class);
     }
 
     public function testForAbstractClassWithArguments()
@@ -58,14 +51,22 @@ class ExceptionsTest extends DITestCase
         $this->expectException(DIException::class);
         $this->expectExceptionCode(DIException::E_CANNOT_INSTANTIATE);
 
-        $this->di->inject(TestAbstractClass::class, ['arg1', 'arg2']);
+        $this->di->new(TestAbstractClass::class, ['arg1', 'arg2']);
     }
 
-    public function testForCloningNotAllowed()
+    public function testChildClassWithInterfaceWithoutMapping()
     {
         $this->expectException(DIException::class);
-        $this->expectExceptionCode(DIException::E_CLONING_NOT_ALLOWED);
-        clone $this->di;
+        $this->expectExceptionCode(DIException::E_CANNOT_INSTANTIATE);
+
+        $this->di->new(TestClassWithConstructorInterfaceDependency::class);
+    }
+
+    public function testMissingParameterForBuiltinParameterType()
+    {
+        $this->expectException(DIException::class);
+        $this->expectExceptionCode(DIException::E_MISSING_ARGUMENT);
+        ($this->di)([TestClassForInvokeMethod::class, 'value']);
     }
 
     public function testForPsr11GetMethod()
@@ -73,6 +74,14 @@ class ExceptionsTest extends DITestCase
         $this->expectException(NotFoundExceptionInterface::class);
         $this->expectExceptionCode(DIException::E_INSTANCE_NOT_FOUND);
         $this->di->get('Fubar');
+    }
+
+    public function testExceptionForInvokeMethod()
+    {
+        $this->expectException(OutOfBoundsException::class);
+        $this->expectExceptionCode(400);
+        $this->expectExceptionMessage('out of bounds');
+        ($this->di)([new TestExceptionForInvokeMethod, 'fail']);
     }
 
     protected function createContainer(): DIContainer

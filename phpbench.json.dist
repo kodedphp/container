@@ -3,11 +3,9 @@
   "path": "Tests/PhpBench",
   "time_unit": "milliseconds",
   "php_disable_ini": false,
-  "reports": [
-    {
-      "default": {
-        "generator": "table"
-      }
+  "reports": {
+    "default": {
+      "generator": "table"
     }
-  ]
+  }
 }

@@ -4,7 +4,7 @@ namespace Koded\Tests\PhpBench;
 
 use Koded\{DIContainer, DIModule};
 use Koded\Tests\Unit\{TestClassWithInterfaceAndNoConstructor,
-    TestClassWithInterfaceDependency,
+    TestClassWithConstructorInterfaceDependency,
     TestInterface,
     TestOtherInterface};
 
@@ -17,7 +17,7 @@ class WithModulesBench extends AbstractBench
      */
     public function benchInject()
     {
-        $this->di->inject(TestClassWithInterfaceDependency::class);
+        $this->di->new(TestClassWithConstructorInterfaceDependency::class);
     }
 
     /**
@@ -26,7 +26,7 @@ class WithModulesBench extends AbstractBench
      */
     public function benchSingleton()
     {
-        $this->di->singleton(TestClassWithInterfaceDependency::class);
+        $this->di->singleton(TestClassWithConstructorInterfaceDependency::class);
     }
 
     /**
@@ -35,8 +35,8 @@ class WithModulesBench extends AbstractBench
      */
     public function benchPsr11()
     {
-        $this->di->singleton(TestClassWithInterfaceDependency::class);
-        $this->di->get(TestClassWithInterfaceDependency::class);
+        $this->di->singleton(TestClassWithConstructorInterfaceDependency::class);
+        $this->di->get(TestClassWithConstructorInterfaceDependency::class);
     }
 
     /**
@@ -55,7 +55,7 @@ class WithModulesBench extends AbstractBench
             {
                 public function configure(DIContainer $injector): void
                 {
-                    $injector->bind(TestOtherInterface::class, TestClassWithInterfaceDependency::class);
+                    $injector->bind(TestOtherInterface::class, TestClassWithConstructorInterfaceDependency::class);
                 }
             },
 

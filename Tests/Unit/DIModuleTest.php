@@ -3,7 +3,6 @@
 namespace Koded\Tests\Unit;
 
 use Koded\{DIContainer, DIModule};
-use function Koded\Stdlib\dump;
 
 class ModuleTest extends DITestCase
 {

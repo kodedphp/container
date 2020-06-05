@@ -25,18 +25,7 @@
         "customPath": "./vendor/bin/phpunit"
     },
     "mutators": {
-        "@default": true,
-        "MethodCallRemoval": false,
-        "ArrayItemRemoval": false,
-        "TrueValue": {
-            "ignore": ["Koded\\DIContainer"]
-        },
-        "FalseValue": {
-            "ignore": ["Koded\\DIContainer"]
-        },
-        "Throw_": {
-            "ignore": ["Koded\\DIContainer"]
-        }
+        "@default": true
     },
     "testFramework": "phpunit",
     "bootstrap": "./Tests/bootstrap.php"

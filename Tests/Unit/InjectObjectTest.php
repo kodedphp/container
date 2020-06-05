@@ -3,7 +3,7 @@
 namespace Koded\Tests\Unit;
 
 use ArrayObject;
-use Koded\{DIContainer, DIException};
+use Koded\DIContainer;
 use PDO;
 
 class InjectObjectTest extends DITestCase
@@ -11,45 +11,37 @@ class InjectObjectTest extends DITestCase
     public function testInjectOnDemand()
     {
         $this->assertNotSame(
-            $this->di->inject(TestChildClassWithNonPublicConstructor::class),
-            $this->di->inject(TestChildClassWithNonPublicConstructor::class),
+            $this->di->new(TestChildClassAndParentWithNonPublicConstructor::class),
+            $this->di->new(TestChildClassAndParentWithNonPublicConstructor::class),
             'Injecting the same class always yields a new instance'
         );
     }
 
     public function testClassWithoutConstructorArguments()
     {
-        $instance = $this->di->inject(TestClassWithoutConstructorArguments::class);
+        $instance = $this->di->new(TestClassWithoutConstructorArguments::class);
         $this->assertInstanceOf(TestClassWithoutConstructorArguments::class, $instance);
     }
 
     public function testClassWithConstructorArguments()
     {
         $this->di->named('$pdo', new PDO('sqlite:'));
-        $instance = $this->di->inject(TestClassWithConstructorArguments::class);
+        $instance = $this->di->new(TestClassWithConstructorArguments::class);
 
         $this->assertInstanceOf(TestClassWithConstructorArguments::class, $instance);
-    }
-
-    public function testChildClassWithInterfaceWithoutMapping()
-    {
-        $this->expectException(DIException::class);
-        $this->expectExceptionCode(DIException::E_CANNOT_INSTANTIATE);
-
-        $this->di->inject(TestClassWithInterfaceDependency::class);
     }
 
     public function testChildClassWithInterfaceWithMapping()
     {
         $this->di->bind(TestInterface::class, TestClassWithInterfaceAndNoConstructor::class);
-        $instance = $this->di->inject(TestClassWithInterfaceDependency::class);
+        $instance = $this->di->new(TestClassWithConstructorInterfaceDependency::class);
 
         $this->assertInstanceOf(TestClassWithInterfaceAndNoConstructor::class, $instance->getDependency());
     }
 
     public function testClassWithMultipleDependencies()
     {
-        $instance = $this->di->inject(TestClassWithMultipleDependencies::class, ['val1', 42, false, ['val2']]);
+        $instance = $this->di->new(TestClassWithMultipleDependencies::class, ['val1', 42, false, ['val2']]);
 
         $this->assertSame('val1', $instance->a);
         $this->assertSame(42, $instance->b);
@@ -60,18 +52,18 @@ class InjectObjectTest extends DITestCase
         $this->assertSame(FILE_APPEND, $instance->g);
     }
 
-    public function testChildClassWithNonPublicConstructor()
+    public function testChildClassAndParentWithWithNonPublicConstructor()
     {
         $this->assertInstanceOf(
-            TestChildClassWithNonPublicConstructor::class,
-            $this->di->inject(TestChildClassWithNonPublicConstructor::class)
+            TestChildClassAndParentWithNonPublicConstructor::class,
+            $this->di->new(TestChildClassAndParentWithNonPublicConstructor::class)
         );
     }
 
     public function testArrayObject()
     {
         /** @var ArrayObject $instance */
-        $instance = $this->di->inject(ArrayObject::class, [['foo' => 'bar'], ArrayObject::ARRAY_AS_PROPS]);
+        $instance = $this->di->new(ArrayObject::class, [['foo' => 'bar'], ArrayObject::ARRAY_AS_PROPS]);
 
         $this->assertInstanceOf(ArrayObject::class, $instance);
         $this->assertSame('bar', $instance->foo);

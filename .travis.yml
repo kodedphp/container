@@ -1,5 +1,6 @@
-sudo: false
 language: php
+os: linux
+dist: xenial
 
 notifications:
   email: false
@@ -11,19 +12,21 @@ cache:
 php:
   - 7.2
   - 7.3
-  - 7.4snapshot
+  - 7.4
+  - nightly
 
-matrix:
+jobs:
   fast_finish: true
   allow_failures:
-    - php: 7.4snapshot
+    - php: nightly
 
 install:
-  - travis_retry composer update -o --no-interaction --prefer-source
+  - composer update -o --no-interaction --prefer-source
+  - wget https://scrutinizer-ci.com/ocular.phar
 
 script:
-  - vendor/bin/phpunit --coverage-clover=build/coverage/clover.xml
+  - vendor/bin/phpunit --coverage-clover=build/clover.xml
 
-after_success:
-  - travis_retry vendor/bin/ocular code-coverage:upload --format=php-clover build/coverage/clover.xml
-  - travis_retry vendor/bin/infection --threads=4 --min-msi=80 --min-covered-msi=80 --log-verbosity=none
+after_script:
+  - php ocular.phar code-coverage:upload --format=php-clover build/clover.xml
+  - vendor/bin/infection --threads=4 --min-msi=77 --min-covered-msi=77 --log-verbosity=none

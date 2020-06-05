@@ -17,9 +17,11 @@ class SingletonMethodTest extends DITestCase
     public function testSingletonCreateWithInjectMethod()
     {
         $singleton = $this->di->singleton(TestClassWithInterfaceAndNoConstructor::class);
-        $other     = $this->di->inject(TestClassWithInterfaceAndNoConstructor::class);
+        $other     = $this->di->new(TestClassWithInterfaceAndNoConstructor::class);
 
-        $this->assertSame($singleton, $other);
+        $this->assertNotSame($singleton, $other,
+            'new() method always creates a new instance even if that class exists as singleton'
+        );
     }
 
     public function testSingletonInstance()

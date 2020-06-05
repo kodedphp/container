@@ -24,8 +24,9 @@ class NamedMethodTest extends DITestCase
     {
         $this->expectException(DIException::class);
         $this->expectExceptionCode(DIException::E_INVALID_PARAMETER_NAME);
+        $this->expectExceptionMessage('Provide a valid name for the global parameter: "');
 
-        $this->di->named($name, null);
+        $this->di->named($name, 'test');
     }
 
     public function invalidNames()

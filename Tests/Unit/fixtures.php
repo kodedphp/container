@@ -2,10 +2,12 @@
 
 namespace Koded\Tests\Unit;
 
-use JsonSerializable;
-use Koded\Stdlib\Config;
-use PDO;
+use ArrayIterator;
+use Countable;
 use Exception;
+use JsonSerializable;
+use OutOfBoundsException;
+use PDO;
 
 interface PostRepository
 {
@@ -73,7 +75,6 @@ class PostService
     {
         $post = $this->post->findBySlug($slug);
         $user = $this->user->findById($post[0]);
-        // ... do something with the results
         return [$user, $post];
     }
 }
@@ -109,7 +110,7 @@ class TestClassForInvokeMethod
         $this->value = $value;
     }
 
-    public static function value($value)
+    public static function value(string $value)
     {
         return $value;
     }
@@ -125,7 +126,7 @@ class TestClassForInvokeMethod
     }
 }
 
-class TestClassWithConstructorArguments implements JsonSerializable
+class TestClassWithConstructorArguments implements JsonSerializable, Countable
 {
     public function __construct(PDO $pdo)
     {
@@ -134,17 +135,25 @@ class TestClassWithConstructorArguments implements JsonSerializable
     public function jsonSerialize()
     {
     }
+
+    public function count()
+    {
+    }
 }
 
-class TestClassWithoutConstructorArguments extends Config
+class TestClassWithoutConstructorArguments extends ArrayIterator
 {
+    public function __construct()
+    {
+        parent::__construct([]);
+    }
 }
 
 class TestClassWithInterfaceAndNoConstructor implements TestInterface
 {
 }
 
-class TestClassWithInterfaceDependency
+class TestClassWithConstructorInterfaceDependency
 {
     private $dependency;
 
@@ -221,7 +230,7 @@ class TestClassWithNonPublicConstructor
     }
 }
 
-class TestChildClassWithNonPublicConstructor extends TestClassWithNonPublicConstructor
+class TestChildClassAndParentWithNonPublicConstructor extends TestClassWithNonPublicConstructor
 {
     public function __construct()
     {
@@ -235,3 +244,45 @@ abstract class TestAbstractClass
     }
 }
 
+class TestExceptionForInvokeMethod
+{
+    public function fail()
+    {
+        throw new OutOfBoundsException('out of bounds', 400);
+    }
+}
+
+class TestClassA
+{
+    public $b, $c;
+
+    public function __construct(TestClassB $b, TestClassC $c)
+    {
+        $this->b = $b;
+        $this->c = $c;
+    }
+}
+
+class TestClassB
+{
+    public $d;
+
+    public function __construct(TestClassD $d)
+    {
+        $this->d = $d;
+    }
+}
+
+class TestClassC
+{
+    public $d;
+
+    public function __construct(TestClassD $d)
+    {
+        $this->d = $d;
+    }
+}
+
+class TestClassD
+{
+}

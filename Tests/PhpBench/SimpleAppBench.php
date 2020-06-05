@@ -18,7 +18,7 @@ class SimpleAppBench extends AbstractBench
      */
     public function benchAppInvoke()
     {
-        $dispatcher = $this->di->inject(PostCommandDispatcher::class, ['hello']);
+        $dispatcher = $this->di->new(PostCommandDispatcher::class, ['hello']);
         ($this->di)([$dispatcher, 'get']);
     }
 

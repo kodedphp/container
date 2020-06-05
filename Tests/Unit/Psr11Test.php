@@ -8,8 +8,8 @@ class Psr11Test extends DITestCase
 {
     public function testGetMethodForInjectedDependency()
     {
-        $instance = $this->di->get(TestClassWithInterfaceDependency::class);
-        $this->assertInstanceOf(TestClassWithInterfaceDependency::class, $instance);
+        $instance = $this->di->get(TestClassWithConstructorInterfaceDependency::class);
+        $this->assertInstanceOf(TestClassWithConstructorInterfaceDependency::class, $instance);
         $this->assertInstanceOf(TestClassWithInterfaceAndNoConstructor::class, $instance->getDependency());
     }
 
@@ -17,7 +17,7 @@ class Psr11Test extends DITestCase
     {
         $this->assertFalse($this->di->has('Fubar'));
         $this->assertTrue($this->di->has(TestInterface::class));
-        $this->assertTrue($this->di->has(TestClassWithInterfaceDependency::class));
+        $this->assertTrue($this->di->has(TestClassWithConstructorInterfaceDependency::class));
     }
 
     public function testNamedDependency()
@@ -34,7 +34,7 @@ class Psr11Test extends DITestCase
             public function configure(DIContainer $injector): void
             {
                 $injector->bind(TestInterface::class, TestClassWithInterfaceAndNoConstructor::class);
-                $injector->singleton(TestClassWithInterfaceDependency::class);
+                $injector->singleton(TestClassWithConstructorInterfaceDependency::class);
             }
         });
     }

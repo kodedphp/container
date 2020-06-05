@@ -12,7 +12,9 @@
 
 namespace Koded;
 
+use Closure;
 use ReflectionClass;
+use ReflectionException;
 use ReflectionFunction;
 use ReflectionFunctionAbstract;
 use ReflectionMethod;
@@ -26,23 +28,28 @@ final class DIReflector
         $dependency  = new ReflectionClass($class);
         $constructor = $dependency->getConstructor();
 
-        if (false === $dependency->isInstantiable()) {
-            if (null !== $constructor && false === $constructor->isPublic()) {
-                throw DIException::forNonPublicMethod($constructor->getDeclaringClass()->name . '::' . $constructor->name);
-            }
-
-            throw DIException::cannotInstantiate(
-                $dependency->name, $dependency->isInterface() ? 'interface' : 'abstract class'
-            );
+        if ($dependency->isInstantiable()) {
+            return $constructor
+                ? new $class(...$this->processMethodArguments($container, $constructor, $arguments))
+                : new $class;
         }
 
-        if (null === $constructor) {
-            return new $class;
+        if (null !== $constructor && false === $constructor->isPublic()) {
+            throw DIException::forNonPublicMethod($constructor->getDeclaringClass()->name . '::' . $constructor->name);
         }
 
-        return new $class(...$this->processMethodArguments($container, $constructor, $arguments));
+        throw DIException::cannotInstantiate(
+            $dependency->name, $dependency->isInterface() ? 'interface' : 'abstract class'
+        );
     }
 
+    /**
+     * @param DIContainer                           $container
+     * @param ReflectionFunction | ReflectionMethod $method
+     * @param array                                 $arguments
+     *
+     * @return array
+     */
     public function processMethodArguments(
         DIContainer $container,
         ReflectionFunctionAbstract $method,
@@ -51,10 +58,16 @@ final class DIReflector
         try {
             $name = $method->getDeclaringClass()->name;
         } catch (Throwable $e) {
-            $name = $method->getNamespaceName() ?: $method->getName();
+            $name = $method->getNamespaceName() ?: $method->name;
         }
 
-        $args = $arguments + $method->getParameters(); // TODO use args positions?
+        $args = array_replace($method->getParameters(), $arguments);
+
+        // PHP quirks...
+
+        if ($name === \ArrayObject::class) {
+            $args[2] = \ArrayIterator::class;
+        }
 
         foreach ($args as $i => $param) {
             if (!$param instanceof ReflectionParameter) {
@@ -63,15 +76,15 @@ final class DIReflector
             $args[$i] = $this->getFromParameterType($container, $param, $arguments);
         }
 
-        // PHP quirks...
-
-        if ($name === 'ArrayObject' && null === $args[2]) {
-            $args[2] = 'ArrayIterator';
-        }
-
         return $args;
     }
 
+    /**
+     * @param callable $callable
+     *
+     * @return ReflectionMethod | ReflectionFunction
+     * @throws ReflectionException
+     */
     public function newMethodFromCallable(callable $callable): ReflectionFunctionAbstract
     {
         switch (gettype($callable)) {
@@ -79,10 +92,9 @@ final class DIReflector
                 return new ReflectionMethod(...$callable);
 
             case 'object';
-                if ($callable instanceof \Closure) {
+                if ($callable instanceof Closure) {
                     return new ReflectionFunction($callable);
                 }
-
                 return (new ReflectionClass($callable))->getMethod('__invoke');
 
             default:
@@ -94,11 +106,11 @@ final class DIReflector
     {
         if (!$dependency = $parameter->getClass()) {
             return $arguments[$parameter->getPosition()]
-                ?? $this->getFromParameter($parameter, $container->getStorage());
+                ?? $this->getFromParameter($container, $parameter);
         }
 
         // Global parameter overriding / singleton instance?
-        if ($param = $this->getFromParameter($parameter, $container->getStorage())) {
+        if ($param = $this->getFromParameter($container, $parameter)) {
             return $param;
         }
 
@@ -106,23 +118,40 @@ final class DIReflector
             return $parameter->getDefaultValue();
         }
 
-        return $container->inject($dependency->name);
+        return $container->new($dependency->name);
     }
 
-    private function getFromParameter(ReflectionParameter $parameter, array $storage)
+    private function getFromParameter(DIContainer $container, ReflectionParameter $parameter)
     {
-        $name = ($parameter->getClass() ?: $parameter)->name;
+        $storage = $container->getStorage();
+        $name    = ($parameter->getClass() ?: $parameter)->name;
 
-        if ($storage[DIContainer::SINGLETONS][$name] ?? false) {
+        if (isset($storage[DIContainer::BINDINGS][$name])) {
+            $name = $storage[DIContainer::BINDINGS][$name];
+        }
+
+        if (isset($storage[DIContainer::EXCLUDE][$name])) {
+            if (array_intersect($storage[DIContainer::EXCLUDE][$name], array_keys($storage[DIContainer::SINGLETONS]))) {
+                return (clone $container)->new($name);
+            }
+        }
+
+        if (isset($storage[DIContainer::SINGLETONS][$name])) {
             return $storage[DIContainer::SINGLETONS][$name];
         }
 
-        if ($storage[DIContainer::NAMED]['$' . $parameter->name] ?? false) {
+        if (isset($storage[DIContainer::NAMED]['$' . $parameter->name])) {
             return $storage[DIContainer::NAMED]['$' . $parameter->name];
         }
 
         if ($parameter->isDefaultValueAvailable()) {
             return $parameter->getDefaultValue();
+        }
+
+        $type = $parameter->getType();
+        if ($type && $type->isBuiltin()) {
+            throw DIException::forMissingArgument($name, $parameter->getPosition(),
+                $parameter->getDeclaringClass()->name . '::' . $parameter->getDeclaringFunction()->name);
         }
 
         return null;
