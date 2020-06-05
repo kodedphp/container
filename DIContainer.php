@@ -13,7 +13,6 @@
 namespace Koded;
 
 use Psr\Container\{ContainerExceptionInterface, ContainerInterface};
-use Throwable;
 
 /**
  * Interface DIModule contributes the application configuration,
@@ -197,7 +196,7 @@ final class DIContainer implements ContainerInterface
     public function named(string $name, $value): DIContainer
     {
         if (1 !== preg_match('/\$[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*/', $name)) {
-            throw DIException::forInvalidParameterName();
+            throw DIException::forInvalidParameterName($name);
         }
         $this->named[$name] = $value;
         return $this;
