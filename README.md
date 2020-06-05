@@ -19,7 +19,7 @@ composer require koded/container
 
 ## Example
 
-Let's look at a simple blog application that has
+Let's look at a blog application that has
 - interfaces for the database repositories and corresponding implementations
 - a shared PDO instance
 - a service class for the blog content fetching
@@ -126,9 +126,21 @@ $container('method', 'arguments');
 
 > To be continued...
 
+
+Code quality
+------------
+
+```shell script
+vendor/bin/infection --threads=4
+vendor/bin/phpbench run --report=default
+vendor/bin/phpunit
+```
+
+
 License
 -------
 [![Software license](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](LICENSE)
+
 The code is distributed under the terms of [The 3-Clause BSD license](LICENSE).
 
 
