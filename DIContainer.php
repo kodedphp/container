@@ -34,6 +34,22 @@ interface DIModule
     public function configure(DIContainer $container): void;
 }
 
+interface DIContainerInterface extends ContainerInterface
+{
+    public function new(string $class, array $arguments = []): ?object;
+
+    public function bind(string $interface, string $class = ''): DIContainerInterface;
+
+    public function singleton(string $class, array $arguments = []): object;
+
+    public function share(object $instance, array $exclude = []): DIContainerInterface;
+
+    public function named(string $name, $value): DIContainerInterface;
+
+    public function getStorage();
+}
+
+
 /**
  * The entry point of the DIContainer that draws the lines between the
  * APIs, implementation of these APIs, modules that configure these
@@ -44,14 +60,14 @@ interface DIModule
  * ($container)([AppEntry::class, 'method']);
  * ```
  */
-final class DIContainer implements ContainerInterface
+class DIContainer implements DIContainerInterface
 {
     public const SINGLETONS = 'singletons';
     public const BINDINGS   = 'bindings';
     public const EXCLUDE    = 'exclude';
     public const NAMED      = 'named';
 
-    private $reflection;
+    protected $reflection;
     private $inProgress = [];
 
     private $singletons = [];
@@ -145,7 +161,7 @@ final class DIContainer implements ContainerInterface
      *
      * @return DIContainer
      */
-    public function share(object $instance, array $exclude = []): DIContainer
+    public function share(object $instance, array $exclude = []): DIContainerInterface
     {
         $class = get_class($instance);
         $this->bindInterfaces($instance, $class);
@@ -171,7 +187,7 @@ final class DIContainer implements ContainerInterface
      *
      * @return DIContainer
      */
-    public function bind(string $interface, string $class = ''): DIContainer
+    public function bind(string $interface, string $class = ''): DIContainerInterface
     {
         assert(false === empty($interface), 'Dependency name for bind() method');
 
@@ -193,7 +209,7 @@ final class DIContainer implements ContainerInterface
      *
      * @return DIContainer
      */
-    public function named(string $name, $value): DIContainer
+    public function named(string $name, $value): DIContainerInterface
     {
         if (1 !== preg_match('/\$[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*/', $name)) {
             throw DIException::forInvalidParameterName($name);
