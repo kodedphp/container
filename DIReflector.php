@@ -21,9 +21,9 @@ use ReflectionMethod;
 use ReflectionParameter;
 use Throwable;
 
-final class DIReflector
+class DIReflector
 {
-    public function newInstance(DIContainer $container, string $class, array $arguments): object
+    public function newInstance(DIContainerInterface $container, string $class, array $arguments): object
     {
         $dependency  = new ReflectionClass($class);
         $constructor = $dependency->getConstructor();
@@ -44,14 +44,14 @@ final class DIReflector
     }
 
     /**
-     * @param DIContainer                           $container
+     * @param DIContainerInterface                  $container
      * @param ReflectionFunction | ReflectionMethod $method
      * @param array                                 $arguments
      *
      * @return array
      */
     public function processMethodArguments(
-        DIContainer $container,
+        DIContainerInterface $container,
         ReflectionFunctionAbstract $method,
         array $arguments
     ): array {
@@ -102,9 +102,12 @@ final class DIReflector
         }
     }
 
-    private function getFromParameterType(DIContainer $container, ReflectionParameter $parameter, array $arguments)
-    {
-        if (!$dependency = $parameter->getClass()) {
+    protected function getFromParameterType(
+        DIContainerInterface $container,
+        ReflectionParameter $parameter,
+        array $arguments
+    ) {
+        if (!$class = $parameter->getType()) {
             return $arguments[$parameter->getPosition()]
                 ?? $this->getFromParameter($container, $parameter);
         }
@@ -118,13 +121,13 @@ final class DIReflector
             return $parameter->getDefaultValue();
         }
 
-        return $container->new($dependency->name);
+        return $container->new($class);
     }
 
-    private function getFromParameter(DIContainer $container, ReflectionParameter $parameter)
+    protected function getFromParameter(DIContainerInterface $container, ReflectionParameter $parameter)
     {
         $storage = $container->getStorage();
-        $name    = ($parameter->getClass() ?: $parameter)->name;
+        $name    = ($parameter->getType() ?? $parameter)->getName();
 
         if (isset($storage[DIContainer::BINDINGS][$name])) {
             $name = $storage[DIContainer::BINDINGS][$name];
