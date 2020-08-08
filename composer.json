@@ -19,7 +19,7 @@
   ],
   "prefer-stable": true,
   "require": {
-    "php": "^7.2 || ^8",
+    "php": "^7.2|^8",
     "psr/container": "~1"
   },
   "autoload": {
@@ -33,7 +33,7 @@
   "require-dev": {
     "ext-pdo": "*",
     "ext-json": "*",
-    "phpunit/phpunit": "~7",
+    "phpunit/phpunit": "^7",
     "infection/infection": "^0.13",
     "phpbench/phpbench": "@dev"
   },
