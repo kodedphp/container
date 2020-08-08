@@ -41,5 +41,10 @@
     "psr-4": {
       "Koded\\Tests\\": "Tests/"
     }
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.3-dev"
+    }
   }
 }
