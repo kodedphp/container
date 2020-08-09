@@ -121,7 +121,7 @@ class DIReflector
             return $parameter->getDefaultValue();
         }
 
-        return $container->new($class);
+        return $container->new($class->getName());
     }
 
     protected function getFromParameter(DIContainerInterface $container, ReflectionParameter $parameter)
