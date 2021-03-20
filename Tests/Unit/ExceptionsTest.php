@@ -12,7 +12,6 @@ class ExceptionsTest extends DITestCase
     {
         $this->expectException(DIException::class);
         $this->expectExceptionCode(DIException::E_CIRCULAR_DEPENDENCY);
-
         $this->di->new(TestCircularDependencyA::class);
     }
 
@@ -26,7 +25,6 @@ class ExceptionsTest extends DITestCase
     {
         $this->expectException(DIException::class);
         $this->expectExceptionCode(DIException::E_NON_PUBLIC_METHOD);
-
         $this->di->new(TestClassWithNonPublicConstructor::class);
     }
 
@@ -34,7 +32,7 @@ class ExceptionsTest extends DITestCase
     {
         $this->expectException(DIException::class);
         $this->expectExceptionCode(DIException::E_CANNOT_INSTANTIATE);
-
+        $this->expectExceptionMessage('Cannot instantiate interface ' . TestInterface::class);
         $this->di->new(TestInterface::class);
     }
 
@@ -42,7 +40,7 @@ class ExceptionsTest extends DITestCase
     {
         $this->expectException(DIException::class);
         $this->expectExceptionCode(DIException::E_CANNOT_INSTANTIATE);
-
+        $this->expectExceptionMessage('Cannot instantiate abstract class ' . TestAbstractClass::class);
         $this->di->new(TestAbstractClass::class);
     }
 
@@ -50,15 +48,23 @@ class ExceptionsTest extends DITestCase
     {
         $this->expectException(DIException::class);
         $this->expectExceptionCode(DIException::E_CANNOT_INSTANTIATE);
-
+        $this->expectExceptionMessage('Cannot instantiate abstract class ' . TestAbstractClass::class);
         $this->di->new(TestAbstractClass::class, ['arg1', 'arg2']);
+    }
+
+    public function testForCreatingTrait()
+    {
+        $this->expectException(DIException::class);
+        $this->expectExceptionCode(DIException::E_CANNOT_INSTANTIATE);
+        $this->expectExceptionMessage('Cannot instantiate trait ' . TestTrait::class);
+        $this->di->new(TestTrait::class);
     }
 
     public function testChildClassWithInterfaceWithoutMapping()
     {
         $this->expectException(DIException::class);
         $this->expectExceptionCode(DIException::E_CANNOT_INSTANTIATE);
-
+        $this->expectExceptionMessage('Cannot instantiate interface ' . TestInterface::class);
         $this->di->new(TestClassWithConstructorInterfaceDependency::class);
     }
 
@@ -67,6 +73,14 @@ class ExceptionsTest extends DITestCase
         $this->expectException(DIException::class);
         $this->expectExceptionCode(DIException::E_MISSING_ARGUMENT);
         ($this->di)([TestClassForInvokeMethod::class, 'value']);
+    }
+
+    public function testForUnprocessableParameter()
+    {
+        $this->expectException(DIException::class);
+        $this->expectExceptionCode(DIException::E_UNPROCESSABLE_FUNCTION);
+        $this->expectExceptionMessage('Cannot process function');
+        ($this->di)('\var_dump', ['value']);
     }
 
     public function testForPsr11GetMethod()
