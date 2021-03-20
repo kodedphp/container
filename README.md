@@ -6,7 +6,7 @@ Dependency Injection Container - Koded
 [![Code Coverage](https://scrutinizer-ci.com/g/kodedphp/container/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/kodedphp/container/?branch=master)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/kodedphp/container/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/kodedphp/container/?branch=master)
 [![Infection MSI](https://badge.stryker-mutator.io/github.com/kodedphp/container/master)](https://github.com/kodedphp/container)
-[![Minimum PHP Version: 7.2](https://img.shields.io/badge/php-%3E%3D%207.2-8892BF.svg)](https://php.net/)
+[![Minimum PHP Version: 7.2](https://img.shields.io/badge/php-%3E%3D%208.0-8892BF.svg)](https://php.net/)
 
 
 `koded/container` is an OOP application bootstrapping and wiring library.
