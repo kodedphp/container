@@ -4,6 +4,7 @@ namespace Koded\Tests\Unit;
 
 use ArrayObject;
 use Koded\DIContainer;
+use Koded\DIException;
 use PDO;
 
 class InjectObjectTest extends DITestCase
@@ -41,7 +42,14 @@ class InjectObjectTest extends DITestCase
 
     public function testClassWithMultipleDependencies()
     {
-        $instance = $this->di->new(TestClassWithMultipleDependencies::class, ['val1', 42, false, ['val2']]);
+        $instance = $this->di->new(
+            TestClassWithMultipleDependencies::class,
+            [
+                'val1',
+                42,
+                false,
+                ['val2']
+            ]);
 
         $this->assertSame('val1', $instance->a);
         $this->assertSame(42, $instance->b);
@@ -68,6 +76,13 @@ class InjectObjectTest extends DITestCase
         $this->assertInstanceOf(ArrayObject::class, $instance);
         $this->assertSame('bar', $instance->foo);
         $this->assertSame(ArrayObject::ARRAY_AS_PROPS, $instance->getFlags());
+    }
+
+    public function testNonExistentClass()
+    {
+        $this->expectException(DIException::class);
+        $this->expectExceptionCode(DIException::E_REFLECTION_ERROR);
+        $this->di->new('NonExistentClass');
     }
 
     protected function createContainer(): DIContainer
