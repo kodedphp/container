@@ -67,13 +67,13 @@ class DIContainer implements DIContainerInterface
     public const EXCLUDE    = 'exclude';
     public const NAMED      = 'named';
 
-    protected $reflection;
-    private $inProgress = [];
+    protected ?DIReflector $reflection;
+    private array $inProgress = [];
 
-    private $singletons = [];
-    private $bindings   = [];
-    private $exclude    = [];
-    private $named      = [];
+    private array $singletons = [];
+    private array $bindings = [];
+    private array $exclude = [];
+    private array $named = [];
 
     public function __construct(DIModule ...$modules)
     {
@@ -114,8 +114,8 @@ class DIContainer implements DIContainerInterface
      * @param array  $arguments [optional] The arguments for the class constructor.
      *                          They have top precedence over the shared dependencies
      *
-     * @return object|callable|null
-     * @throws ContainerExceptionInterface
+     * @return callable|object|null
+     * @throws DIException
      */
     public function new(string $class, array $arguments = []): ?object
     {
@@ -163,12 +163,10 @@ class DIContainer implements DIContainerInterface
      */
     public function share(object $instance, array $exclude = []): DIContainerInterface
     {
-        $class = get_class($instance);
+        $class = $instance::class;
         $this->bindInterfaces($instance, $class);
-
         $this->singletons[$class] = $instance;
         $this->bindings[$class]   = $class;
-
         foreach ($exclude as $name) {
             $this->exclude[$name][$class] = $class;
         }
@@ -190,7 +188,6 @@ class DIContainer implements DIContainerInterface
     public function bind(string $interface, string $class = ''): DIContainerInterface
     {
         assert(false === empty($interface), 'Dependency name for bind() method');
-
         if ('$' === ($class[0] ?? null)) {
             $this->bindings[$interface] = $interface;
             $class && $this->bindings[$class] = $interface;
@@ -209,7 +206,7 @@ class DIContainer implements DIContainerInterface
      *
      * @return DIContainer
      */
-    public function named(string $name, $value): DIContainerInterface
+    public function named(string $name, mixed $value): DIContainerInterface
     {
         if (1 !== preg_match('/\$[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*/', $name)) {
             throw DIException::forInvalidParameterName($name);
@@ -245,10 +242,7 @@ class DIContainer implements DIContainerInterface
      */
     public function get($id)
     {
-        if (false === $this->has($id)) {
-            throw DIInstanceNotFound::for($id);
-        }
-
+        $this->has($id) || throw DIInstanceNotFound::for($id);
         $dependency = $this->getNameFromBindings($id);
         return $this->singletons[$dependency]
             ?? $this->named[$dependency]
