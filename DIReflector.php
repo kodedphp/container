@@ -91,7 +91,7 @@ class DIReflector
         switch (\gettype($callable)) {
             case 'array':
                 return new ReflectionMethod(...$callable);
-            case 'object';
+            case 'object':
                 if ($callable instanceof Closure) {
                     return new ReflectionFunction($callable);
                 }
