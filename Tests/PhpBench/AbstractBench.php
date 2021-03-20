@@ -13,10 +13,7 @@ require_once __DIR__ . '/../Unit/fixtures.php';
  */
 abstract class AbstractBench
 {
-    /**
-     * @var DIContainer
-     */
-    protected $di;
+    protected ?DIContainer $di;
 
     public function setUp(): void
     {

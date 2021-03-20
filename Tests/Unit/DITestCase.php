@@ -7,8 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 abstract class DITestCase extends TestCase
 {
-    /** @var DIContainer */
-    protected $di;
+    protected ?DIContainer $di;
 
     abstract protected function createContainer(): DIContainer;
 
