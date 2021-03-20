@@ -28,6 +28,10 @@ interface TestOtherInterface
     public function __construct();
 }
 
+trait TestTrait
+{
+}
+
 class DatabasePostRepository implements PostRepository
 {
     private $pdo;
