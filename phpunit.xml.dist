@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/7.4/phpunit.xsd"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
          bootstrap="Tests/bootstrap.php"
          cacheResultFile="build/.phpunit.result.cache"
          stopOnFailure="true"
@@ -11,24 +11,24 @@
             <directory>Tests/Unit</directory>
         </testsuite>
     </testsuites>
-    <filter>
-        <whitelist>
-            <directory suffix=".php">./</directory>
-            <exclude>
-                <directory>./vendor</directory>
-                <directory>./Tests</directory>
-                <directory>./bin</directory>
-                <directory>./build</directory>
-                <directory>./docker</directory>
-                <directory>./docs</directory>
-            </exclude>
-        </whitelist>
-    </filter>
     <php>
         <ini name="date.timezone" value="UTC"/>
     </php>
-<!--    <logging>-->
-<!--        <log type="coverage-html" target="build/coverage-html"/>-->
-<!--        <log type="coverage-clover" target="build/clover.xml"/>-->
-<!--    </logging>-->
+    <coverage>
+        <include>
+            <directory suffix=".php">./</directory>
+        </include>
+        <exclude>
+            <directory>./vendor</directory>
+            <directory>./Tests</directory>
+            <directory>./bin</directory>
+            <directory>./build</directory>
+            <directory>./docker</directory>
+            <directory>./docs</directory>
+        </exclude>
+    </coverage>
+    <!--    <logging>-->
+    <!--        <log type="coverage-html" target="build/coverage-html"/>-->
+    <!--        <log type="coverage-clover" target="build/clover.xml"/>-->
+    <!--    </logging>-->
 </phpunit>
