@@ -4,7 +4,7 @@ namespace Koded\Tests\Unit;
 
 use Koded\{DIContainer, DIModule};
 
-class ModuleTest extends DITestCase
+class DIModuleTest extends DITestCase
 {
     public function testBindMethod()
     {
