@@ -29,7 +29,7 @@ class DIException extends \LogicException implements ContainerExceptionInterface
     protected array $messages = [
         DIException::E_CIRCULAR_DEPENDENCY => 'Circular dependency detected while creating an instance for :class',
         DIException::E_NON_PUBLIC_METHOD => 'Failed to create an instance, because the method ":class::s:method" is not public',
-        DIException::E_CANNOT_INSTANTIATE => 'Cannot instantiate the :type :name',
+        DIException::E_CANNOT_INSTANTIATE => 'Cannot instantiate :type :name',
         DIException::E_INVALID_PARAMETER_NAME => 'Provide a valid name for the global parameter: ":name"',
         DIException::E_INSTANCE_NOT_FOUND => 'The requested instance :id is not found in the container',
         DIException::E_MISSING_ARGUMENT => 'Required parameter "$:name" is missing at position :position in :function()',
@@ -58,14 +58,13 @@ class DIException extends \LogicException implements ContainerExceptionInterface
 
     public static function cannotInstantiate(\ReflectionClass $dependency): static
     {
+        $type = 'class';
         if ($dependency->isInterface()) {
             $type = 'interface';
         } elseif ($dependency->isAbstract()) {
             $type = 'abstract class';
         } elseif ($dependency->isTrait()) {
             $type = 'trait';
-        } else {
-            $type = 'class';
         }
         return new static(static::E_CANNOT_INSTANTIATE, [':name' => $dependency->name, ':type' => $type]);
     }
@@ -89,7 +88,7 @@ class DIException extends \LogicException implements ContainerExceptionInterface
         return new static(static::E_REFLECTION_ERROR, [':message' => $e->getMessage()], $e);
     }
 
-    // TODO [EXPERIMENTAL]
+    // [EXPERIMENTAL]
     public static function forUnprocessableFunctionParameter(\ReflectionParameter $parameter, array $backtrace): static
     {
         $function = $parameter->getDeclaringFunction()->name;
