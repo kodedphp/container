@@ -23,12 +23,14 @@
     "psr/container": "^1"
   },
   "autoload": {
-    "exclude-from-classmap": [
-      "/Tests/"
+    "classmap": [
+      ""
     ],
-    "psr-4": {
-      "Koded\\": ""
-    }
+    "exclude-from-classmap": [
+      "build/",
+      "docs/",
+      "Tests/"
+    ]
   },
   "require-dev": {
     "ext-pdo": "*",
