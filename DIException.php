@@ -28,7 +28,7 @@ class DIException extends \LogicException implements ContainerExceptionInterface
 
     protected array $messages = [
         DIException::E_CIRCULAR_DEPENDENCY => 'Circular dependency detected while creating an instance for :class',
-        DIException::E_NON_PUBLIC_METHOD => 'Failed to create an instance, because the method ":class::s:method" is not public',
+        DIException::E_NON_PUBLIC_METHOD => 'Failed to create an instance, because the method ":class:::method" is not public',
         DIException::E_CANNOT_INSTANTIATE => 'Cannot instantiate :type :name',
         DIException::E_INVALID_PARAMETER_NAME => 'Provide a valid name for the global parameter: ":name"',
         DIException::E_INSTANCE_NOT_FOUND => 'The requested instance :id is not found in the container',
