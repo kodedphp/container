@@ -19,7 +19,6 @@ use ReflectionFunction;
 use ReflectionFunctionAbstract;
 use ReflectionMethod;
 use ReflectionParameter;
-use Throwable;
 
 class DIReflector
 {
