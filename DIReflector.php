@@ -59,18 +59,7 @@ class DIReflector
         ReflectionFunctionAbstract $method,
         array $arguments
     ): array {
-        try {
-            $name = $method->getDeclaringClass()->name;
-        } catch (Throwable $e) {
-            $name = $method->getNamespaceName() ?: $method->name;
-        }
         $args = \array_replace($method->getParameters(), $arguments);
-
-        // PHP quirks...
-
-        if ($name === \ArrayObject::class) {
-            $args[2] = \ArrayIterator::class;
-        }
         foreach ($args as $i => $param) {
             if (!$param instanceof ReflectionParameter) {
                 continue;
