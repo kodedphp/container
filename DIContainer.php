@@ -101,7 +101,7 @@ class DIContainer implements DIContainerInterface
 
     public function __invoke(callable $callable, array $arguments = [])
     {
-        return call_user_func_array($callable, $this->reflection->processMethodArguments(
+        return \call_user_func_array($callable, $this->reflection->processMethodArguments(
             $this, $this->reflection->newMethodFromCallable($callable), $arguments
         ));
     }
@@ -187,7 +187,7 @@ class DIContainer implements DIContainerInterface
      */
     public function bind(string $interface, string $class = ''): DIContainerInterface
     {
-        assert(false === empty($interface), 'Dependency name for bind() method');
+        \assert(false === empty($interface), 'Dependency name for bind() method');
         if ('$' === ($class[0] ?? null)) {
             $this->bindings[$interface] = $interface;
             $class && $this->bindings[$class] = $interface;
@@ -208,7 +208,7 @@ class DIContainer implements DIContainerInterface
      */
     public function named(string $name, mixed $value): DIContainerInterface
     {
-        if (1 !== preg_match('/\$[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*/', $name)) {
+        if (1 !== \preg_match('/\$[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*/', $name)) {
             throw DIException::forInvalidParameterName($name);
         }
         $this->named[$name] = $value;
@@ -233,7 +233,7 @@ class DIContainer implements DIContainerInterface
      */
     public function has($id): bool
     {
-        assert(false === empty($id), 'Dependency name for has() method');
+        \assert(false === empty($id), 'Dependency name for has() method');
         return isset($this->bindings[$id]) || isset($this->named[$id]);
     }
 
@@ -257,13 +257,13 @@ class DIContainer implements DIContainerInterface
 
     private function getNameFromBindings(string $dependency): string
     {
-        assert(false === empty($dependency), 'Dependency name for class/interface');
+        \assert(false === empty($dependency), 'Dependency name for class/interface');
         return $this->bindings[$dependency] ?? $dependency;
     }
 
     private function bindInterfaces(object $dependency, string $class): void
     {
-        foreach (class_implements($dependency) as $interface) {
+        foreach (\class_implements($dependency) as $interface) {
             if (isset($this->bindings[$interface])) {
                 $this->bindings[$interface] = $class;
                 break;
