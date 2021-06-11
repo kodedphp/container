@@ -12,7 +12,7 @@
 
 namespace Koded;
 
-use Psr\Container\{ContainerExceptionInterface, ContainerInterface};
+use Psr\Container\ContainerInterface;
 
 /**
  * Interface DIModule contributes the application configuration,
@@ -46,9 +46,8 @@ interface DIContainerInterface extends ContainerInterface
 
     public function named(string $name, $value): DIContainerInterface;
 
-    public function getStorage();
+    public function getStorage(): iterable;
 }
-
 
 /**
  * The entry point of the DIContainer that draws the lines between the
@@ -114,8 +113,7 @@ class DIContainer implements DIContainerInterface
      * @param array  $arguments [optional] The arguments for the class constructor.
      *                          They have top precedence over the shared dependencies
      *
-     * @return callable|object|null
-     * @throws DIException
+     * @return object|null
      */
     public function new(string $class, array $arguments = []): ?object
     {
@@ -218,7 +216,7 @@ class DIContainer implements DIContainerInterface
     /**
      * @internal
      */
-    public function getStorage(): array
+    public function getStorage(): iterable
     {
         return [
             self::SINGLETONS => $this->singletons,
