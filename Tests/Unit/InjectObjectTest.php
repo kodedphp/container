@@ -5,6 +5,7 @@ namespace Koded\Tests\Unit;
 use ArrayObject;
 use Koded\DIContainer;
 use Koded\DIException;
+use Koded\DIModule;
 use PDO;
 
 class InjectObjectTest extends DITestCase
@@ -83,6 +84,22 @@ class InjectObjectTest extends DITestCase
         $this->expectException(DIException::class);
         $this->expectExceptionCode(DIException::E_REFLECTION_ERROR);
         $this->di->new('NonExistentClass');
+    }
+
+    public function testClosureArgumentsInjection()
+    {
+        $container = new DIContainer(new class implements DIModule {
+            public function configure(DIContainer $container): void
+            {
+                $container->bind(TestInterface::class, TestClassWithInterfaceAndNoConstructor::class);
+            }
+        });
+
+        $callable = function(TestClassWithConstructorInterfaceDependency $argument) {
+            $this->assertInstanceOf(TestInterface::class, $argument->getDependency());
+        };
+
+        ($container)($callable);
     }
 
     protected function createContainer(): DIContainer

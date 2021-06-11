@@ -92,15 +92,18 @@ class DIException extends \LogicException implements ContainerExceptionInterface
     public static function forUnprocessableFunctionParameter(\ReflectionParameter $parameter, array $backtrace): static
     {
         $function = $parameter->getDeclaringFunction()->name;
-        $trace = \array_filter($backtrace, function(array $trace) use ($function) {
-            try {
-                return \ltrim($trace['args'][0], '\\') === $function;
-            } catch (\Throwable) {
-                return false;
-            }
-        });
+        if (\str_ends_with($function, '{closure}')) {
+            $trace = $backtrace;
+        } else {
+            $trace = \array_filter($backtrace, function(array $trace) use ($function) {
+                try {
+                    return \ltrim($trace['args'][0], '\\') === $function;
+                } catch (\Throwable) {
+                    return false;
+                }
+            });
+        }
         $trace = \array_pop($trace);
-
         return new self(self::E_UNPROCESSABLE_FUNCTION, [
             ':name' => $parameter->name,
             ':function' => $function,

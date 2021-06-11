@@ -135,9 +135,9 @@ class DIReflector
             return $parameter->getDefaultValue();
         }
 
-        // [EXPERIMENTAL] in case of functions without arguments
+        // [EXPERIMENTAL] in case of functions without arguments or Closure
         // (ie. PHP built-in var_dump, print_r, etc)
-        if (null === $parameter->getDeclaringClass()) {
+        if (null === $parameter->getDeclaringClass() && null === $parameter->getDeclaringFunction()) {
             throw DIException::forUnprocessableFunctionParameter($parameter, \debug_backtrace());
         }
 
