@@ -49,5 +49,8 @@
     "branch-alias": {
       "dev-master": "2.0-dev"
     }
+  },
+  "config": {
+    "optimize-autoloader": true
   }
 }
