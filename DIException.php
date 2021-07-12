@@ -23,8 +23,7 @@ class DIException extends \LogicException implements ContainerExceptionInterface
         E_INVALID_PARAMETER_NAME = 7004,
         E_INSTANCE_NOT_FOUND = 7005,
         E_MISSING_ARGUMENT = 7006,
-        E_REFLECTION_ERROR = 7007,
-        E_UNPROCESSABLE_FUNCTION = 7008;
+        E_REFLECTION_ERROR = 7007;
 
     protected array $messages = [
         DIException::E_CIRCULAR_DEPENDENCY => 'Circular dependency detected while creating an instance for :class',
@@ -32,9 +31,8 @@ class DIException extends \LogicException implements ContainerExceptionInterface
         DIException::E_CANNOT_INSTANTIATE => 'Cannot instantiate :type :name',
         DIException::E_INVALID_PARAMETER_NAME => 'Provide a valid name for the global parameter: ":name"',
         DIException::E_INSTANCE_NOT_FOUND => 'The requested instance :id is not found in the container',
-        DIException::E_MISSING_ARGUMENT => 'Required parameter "$:name" is missing at position :position in :function()',
+        DIException::E_MISSING_ARGUMENT => 'Required parameter ":name" is missing at position :position in :function()',
         DIException::E_REFLECTION_ERROR => ':message',
-        DIException::E_UNPROCESSABLE_FUNCTION => 'Cannot process function :function() for argument #:position ($:name), called in :file on line :line',
     ];
 
     public function __construct(int $code, array $arguments = [], \Throwable $previous = null)
@@ -58,14 +56,12 @@ class DIException extends \LogicException implements ContainerExceptionInterface
 
     public static function cannotInstantiate(\ReflectionClass $dependency): static
     {
-        $type = 'class';
-        if ($dependency->isInterface()) {
-            $type = 'interface';
-        } elseif ($dependency->isAbstract()) {
-            $type = 'abstract class';
-        } elseif ($dependency->isTrait()) {
-            $type = 'trait';
-        }
+        $type = match (true) {
+            $dependency->isInterface() => 'interface',
+            $dependency->isAbstract() => 'abstract class',
+            $dependency->isTrait() => 'trait',
+            default => 'class',
+        };
         return new static(static::E_CANNOT_INSTANTIATE, [':name' => $dependency->name, ':type' => $type]);
     }
 
@@ -74,43 +70,24 @@ class DIException extends \LogicException implements ContainerExceptionInterface
         return new static(static::E_INVALID_PARAMETER_NAME, [':name' => $name]);
     }
 
-    public static function forMissingArgument(string $name, \ReflectionParameter $parameter): static
+    public static function forMissingArgument(
+        string $name,
+        \ReflectionParameter $parameter,
+        \Throwable $e = null): static
     {
         return new static(static::E_MISSING_ARGUMENT, [
             ':name' => $name,
             ':position' => $parameter->getPosition(),
-            ':function' => $parameter->getDeclaringClass()->name . '::' . $parameter->getDeclaringFunction()->name,
-        ]);
+            ':function' => \join('::', \array_filter([
+                $parameter->getDeclaringClass()?->name,
+                $parameter->getDeclaringFunction()?->name
+            ]))
+        ], $e);
     }
 
     public static function forReflectionError(\ReflectionException $e): static
     {
         return new static(static::E_REFLECTION_ERROR, [':message' => $e->getMessage()], $e);
-    }
-
-    // [EXPERIMENTAL]
-    public static function forUnprocessableFunctionParameter(\ReflectionParameter $parameter, array $backtrace): static
-    {
-        $function = $parameter->getDeclaringFunction()->name;
-        if (\str_ends_with($function, '{closure}')) {
-            $trace = $backtrace;
-        } else {
-            $trace = \array_filter($backtrace, function(array $trace) use ($function) {
-                try {
-                    return \ltrim($trace['args'][0], '\\') === $function;
-                } catch (\Throwable) {
-                    return false;
-                }
-            });
-        }
-        $trace = \array_pop($trace);
-        return new self(self::E_UNPROCESSABLE_FUNCTION, [
-            ':name' => $parameter->name,
-            ':function' => $function,
-            ':position' => $parameter->getPosition() + 1,
-            ':file' => $trace['file'],
-            ':line' => $trace['line']
-        ]);
     }
 }
 

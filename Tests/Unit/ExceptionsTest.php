@@ -72,15 +72,8 @@ class ExceptionsTest extends DITestCase
     {
         $this->expectException(DIException::class);
         $this->expectExceptionCode(DIException::E_MISSING_ARGUMENT);
+        $this->expectExceptionMessage('Required parameter "string" is missing at position 0');
         ($this->di)([TestClassForInvokeMethod::class, 'value']);
-    }
-
-    public function testForUnprocessableParameter()
-    {
-        $this->expectException(DIException::class);
-        $this->expectExceptionCode(DIException::E_UNPROCESSABLE_FUNCTION);
-        $this->expectExceptionMessage('Cannot process function');
-        ($this->di)('\var_dump', ['value']);
     }
 
     public function testForPsr11GetMethod()
