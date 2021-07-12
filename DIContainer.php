@@ -112,7 +112,6 @@ class DIContainer implements DIContainerInterface
      * @param string $class     FQCN
      * @param array  $arguments [optional] The arguments for the class constructor.
      *                          They have top precedence over the shared dependencies
-     *
      * @return object|null
      */
     public function new(string $class, array $arguments = []): ?object
@@ -136,7 +135,6 @@ class DIContainer implements DIContainerInterface
      *
      * @param string $class     FQCN
      * @param array  $arguments [optional] See new() description
-     *
      * @return object
      */
     public function singleton(string $class, array $arguments = []): object
@@ -156,7 +154,6 @@ class DIContainer implements DIContainerInterface
      *                                be excluded from injecting this instance.
      *                                In this case, a new object will be created and
      *                                injected for these classes
-     *
      * @return DIContainer
      */
     public function share(object $instance, array $exclude = []): DIContainerInterface
@@ -180,7 +177,6 @@ class DIContainer implements DIContainerInterface
      * @param string $interface FQN of the interface
      * @param string $class     FQCN of the concrete class implementation,
      *                          or empty value for deferred binding
-     *
      * @return DIContainer
      */
     public function bind(string $interface, string $class = ''): DIContainerInterface
@@ -201,7 +197,6 @@ class DIContainer implements DIContainerInterface
      *
      * @param string $name  The name of the argument
      * @param mixed  $value The actual value
-     *
      * @return DIContainer
      */
     public function named(string $name, mixed $value): DIContainerInterface
