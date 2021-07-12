@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the Koded package.
@@ -50,7 +50,6 @@ class DIReflector
      * @param DIContainerInterface       $container
      * @param ReflectionFunctionAbstract $method
      * @param array                      $arguments
-     *
      * @return array
      */
     public function processMethodArguments(
@@ -58,12 +57,9 @@ class DIReflector
         ReflectionFunctionAbstract $method,
         array $arguments
     ): array {
-        $args = \array_replace($method->getParameters(), $arguments);
+        $args = $method->getParameters();
         foreach ($args as $i => $param) {
-            if (!$param instanceof ReflectionParameter) {
-                continue;
-            }
-            $args[$i] = $this->getFromParameterType($container, $param, $arguments);
+            $args[$i] = $this->getFromParameterType($container, $param, $arguments[$i] ?? null);
         }
         return $args;
     }
@@ -92,14 +88,14 @@ class DIReflector
     protected function getFromParameterType(
         DIContainerInterface $container,
         ReflectionParameter $parameter,
-        array $arguments
+        mixed $value
     ): mixed {
         if (!$class = $parameter->getType()) {
             return $arguments[$parameter->getPosition()]
-                ?? $this->getFromParameter($container, $parameter);
+                ?? $this->getFromParameter($container, $parameter, $value);
         }
         // Global parameter overriding / singleton instance?
-        if ($param = $this->getFromParameter($container, $parameter)) {
+        if (null !== $param = $this->getFromParameter($container, $parameter, $value)) {
             return $param;
         }
         if ($parameter->isDefaultValueAvailable()) {
@@ -110,39 +106,40 @@ class DIReflector
 
     protected function getFromParameter(
         DIContainerInterface $container,
-        ReflectionParameter $parameter
+        ReflectionParameter $parameter,
+        mixed $value
     ): mixed {
         $storage = $container->getStorage();
-        $name    = ($parameter->getType() ?? $parameter)->getName();
-        if (isset($storage[DIContainer::BINDINGS][$name])) {
-            $name = $storage[DIContainer::BINDINGS][$name];
+        try {
+            $type = ($parameter->getType() ?? $parameter)->getName();
+        } catch (\Error) {
+            // i.e. for ReflectionUnionType, continue with processing
+            return $value;
         }
-        if (isset($storage[DIContainer::EXCLUDE][$name])) {
+
+        if (isset($storage[DIContainer::BINDINGS][$type])) {
+            $type = $storage[DIContainer::BINDINGS][$type];
+        }
+        if (isset($storage[DIContainer::EXCLUDE][$type])) {
             if (\array_intersect(
-                $storage[DIContainer::EXCLUDE][$name],
+                $storage[DIContainer::EXCLUDE][$type],
                 \array_keys($storage[DIContainer::SINGLETONS])
             )) {
-                return (clone $container)->new($name);
+                return (clone $container)->new($type);
             }
         }
-        if (isset($storage[DIContainer::SINGLETONS][$name])) {
-            return $storage[DIContainer::SINGLETONS][$name];
+        if (isset($storage[DIContainer::SINGLETONS][$type])) {
+            return $storage[DIContainer::SINGLETONS][$type];
         }
         if (isset($storage[DIContainer::NAMED]['$' . $parameter->name])) {
             return $storage[DIContainer::NAMED]['$' . $parameter->name];
         }
-        if ($parameter->isDefaultValueAvailable()) {
-            return $parameter->getDefaultValue();
-        }
-
-        // [EXPERIMENTAL] in case of functions without arguments or Closure
-        // (ie. PHP built-in var_dump, print_r, etc)
-        if (null === $parameter->getDeclaringClass() && null === $parameter->getDeclaringFunction()) {
-            throw DIException::forUnprocessableFunctionParameter($parameter, \debug_backtrace());
-        }
-
-        if ($parameter->getType()?->isBuiltin()) {
-            throw DIException::forMissingArgument($name, $parameter);
+        try {
+            return $value ?? $parameter?->getDefaultValue();
+        } catch (\ReflectionException $e) {
+            if ($parameter->getType()?->isBuiltin()) {
+                throw DIException::forMissingArgument($type, $parameter, $e);
+            }
         }
         return null;
     }
