@@ -172,6 +172,53 @@ class TestClassWithConstructorInterfaceDependency
     }
 }
 
+class TestClassWithMixedArgumentTypeDependencies
+{
+    private TestClassWithConstructorInterfaceDependency $first;
+    private int $second;
+    private array $third;
+    private TestClassWithConstructorArguments $fourth;
+    private bool $fifth;
+
+    public function __construct(
+        TestClassWithConstructorInterfaceDependency $first,
+        int $second,
+        array $third,
+        TestClassWithConstructorArguments $fourth,
+        bool $fifth)
+    {
+        $this->first = $first;
+        $this->second = $second;
+        $this->third = $third;
+        $this->fourth = $fourth;
+        $this->fifth = $fifth;
+    }
+    public function getFirst(): TestClassWithConstructorInterfaceDependency
+    {
+        return $this->first;
+    }
+
+    public function getSecond(): int
+    {
+        return $this->second;
+    }
+
+    public function getThird(): array
+    {
+        return $this->third;
+    }
+
+    public function getFourth(): TestClassWithConstructorArguments
+    {
+        return $this->fourth;
+    }
+
+    public function getFifth(): bool
+    {
+        return $this->fifth;
+    }
+}
+
 class TestClassWithMultipleDependencies
 {
     private $a, $b, $c, $d, $e, $f, $g;
