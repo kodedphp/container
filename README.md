@@ -2,7 +2,7 @@ Dependency Injection Container - Koded
 --------------------------------------
 
 [![Latest Stable Version](https://img.shields.io/packagist/v/koded/container.svg)](https://packagist.org/packages/koded/container)
-[![Build Status](https://travis-ci.org/kodedphp/container.svg?branch=master)](https://travis-ci.org/kodedphp/container)
+[![Build Status](https://travis-ci.com/kodedphp/container.svg?branch=master)](https://travis-ci.org/kodedphp/container)
 [![Code Coverage](https://scrutinizer-ci.com/g/kodedphp/container/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/kodedphp/container/?branch=master)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/kodedphp/container/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/kodedphp/container/?branch=master)
 [![Infection MSI](https://badge.stryker-mutator.io/github.com/kodedphp/container/master)](https://github.com/kodedphp/container)
