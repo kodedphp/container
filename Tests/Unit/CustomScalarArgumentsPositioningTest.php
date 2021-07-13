@@ -44,8 +44,6 @@ class CustomScalarArgumentsPositioningTest extends DITestCase
             {
                 $container->bind(TestInterface::class, TestClassWithInterfaceAndNoConstructor::class);
                 // TODO $container->bind(TestInterface::class, TestClassWithPrimitiveConstructorArgument::class);
-
-                $container->share(new \PDO('sqlite://memory'));
             }
         });
     }
