@@ -66,7 +66,6 @@ class DIReflector
 
     /**
      * @param callable $callable
-     *
      * @return ReflectionFunctionAbstract
      * @throws ReflectionException
      */
