@@ -20,7 +20,7 @@ install:
   - wget https://scrutinizer-ci.com/ocular.phar
 
 script:
-  - vendor/bin/phpunit --coverage-clover=build/clover.xml
+  - XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-clover=build/clover.xml
 
 after_script:
   - php ocular.phar code-coverage:upload --format=php-clover build/clover.xml
