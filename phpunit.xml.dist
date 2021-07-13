@@ -14,7 +14,7 @@
     <php>
         <ini name="date.timezone" value="UTC"/>
     </php>
-    <coverage includeUncoveredFiles="false">
+    <coverage>
         <include>
             <file>DIContainer.php</file>
             <file>DIReflector.php</file>
