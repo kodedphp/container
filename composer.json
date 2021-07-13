@@ -36,8 +36,8 @@
     "ext-pdo": "*",
     "ext-json": "*",
     "phpunit/phpunit": "^9",
-    "infection/infection": "@dev",
-    "phpbench/phpbench": "@dev",
+    "infection/infection": "^0.23",
+    "phpbench/phpbench": "^1",
     "scrutinizer/ocular": "dev-master",
     "symfony/var-dumper": "^5"
   },
