@@ -24,8 +24,14 @@ class CustomScalarArgumentsPositioningTest extends DITestCase
         $this->assertSame([10, 20, 30], $instance->getThird());
 
         $this->assertInstanceOf(
-            TestClassWithConstructorArguments::class,
+            TestClassB::class,
             $instance->getFourth()
+        );
+
+        $this->assertInstanceOf(
+            TestClassD::class,
+            $instance->getFourth()->d,
+            'Dependency TestClassD is resolved'
         );
 
         $this->assertSame(false, $instance->getFifth());

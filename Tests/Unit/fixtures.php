@@ -177,14 +177,14 @@ class TestClassWithMixedArgumentTypeDependencies
     private TestClassWithConstructorInterfaceDependency $first;
     private int $second;
     private array $third;
-    private TestClassWithConstructorArguments $fourth;
+    private TestClassB $fourth;
     private bool $fifth;
 
     public function __construct(
         TestClassWithConstructorInterfaceDependency $first,
         int $second,
         array $third,
-        TestClassWithConstructorArguments $fourth,
+        TestClassB $fourth,
         bool $fifth)
     {
         $this->first = $first;
@@ -208,7 +208,7 @@ class TestClassWithMixedArgumentTypeDependencies
         return $this->third;
     }
 
-    public function getFourth(): TestClassWithConstructorArguments
+    public function getFourth(): TestClassB
     {
         return $this->fourth;
     }
