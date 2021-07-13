@@ -14,18 +14,12 @@
     <php>
         <ini name="date.timezone" value="UTC"/>
     </php>
-    <coverage>
+    <coverage includeUncoveredFiles="false">
         <include>
-            <directory suffix=".php">./</directory>
+            <file>DIContainer.php</file>
+            <file>DIReflector.php</file>
+            <file>DIException.php</file>
         </include>
-        <exclude>
-            <directory>./vendor</directory>
-            <directory>./Tests</directory>
-            <directory>./bin</directory>
-            <directory>./build</directory>
-            <directory>./docker</directory>
-            <directory>./docs</directory>
-        </exclude>
     </coverage>
     <!--    <logging>-->
     <!--        <log type="coverage-html" target="build/coverage-html"/>-->
