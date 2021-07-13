@@ -15,13 +15,12 @@ php:
 jobs:
   fast_finish: true
 
-install:
+before_script:
   - composer update -o --no-interaction --prefer-source
-  - wget https://scrutinizer-ci.com/ocular.phar
 
 script:
   - XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-clover=build/clover.xml
 
 after_script:
-  - php ocular.phar code-coverage:upload --format=php-clover build/clover.xml
-  - vendor/bin/infection --threads=4 --min-msi=77 --min-covered-msi=77 --log-verbosity=none
+  - vendor/bin/ocular code-coverage:upload --format=php-clover build/clover.xml
+#  - vendor/bin/infection --threads=4 --min-msi=77 --min-covered-msi=77 --log-verbosity=none
