@@ -66,7 +66,7 @@ class DIContainer implements DIContainerInterface
     public const EXCLUDE    = 'exclude';
     public const NAMED      = 'named';
 
-    protected ?DIReflector $reflection;
+    protected DIReflector $reflection;
     private array $inProgress = [];
 
     private array $singletons = [];
@@ -91,13 +91,15 @@ class DIContainer implements DIContainerInterface
 
     public function __destruct()
     {
-        $this->reflection = null;
         $this->singletons = [];
         $this->bindings   = [];
         $this->exclude    = [];
         $this->named      = [];
     }
 
+    /**
+     * @throws \ReflectionException
+     */
     public function __invoke(callable $callable, array $arguments = [])
     {
         return \call_user_func_array($callable, $this->reflection->processMethodArguments(
