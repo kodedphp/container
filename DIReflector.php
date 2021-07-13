@@ -72,17 +72,13 @@ class DIReflector
      */
     public function newMethodFromCallable(callable $callable): ReflectionFunctionAbstract
     {
-        switch (\gettype($callable)) {
-            case 'array':
-                return new ReflectionMethod(...$callable);
-            case 'object':
-                if ($callable instanceof Closure) {
-                    return new ReflectionFunction($callable);
-                }
-                return (new ReflectionClass($callable))->getMethod('__invoke');
-            default:
-                return new ReflectionFunction($callable);
-        }
+        return match (\gettype($callable)) {
+            'array' => new ReflectionMethod(...$callable),
+            'object' => $callable instanceof Closure
+                ? new ReflectionFunction($callable)
+                : (new ReflectionClass($callable))->getMethod('__invoke'),
+            default => new ReflectionFunction($callable)
+        };
     }
 
     protected function getFromParameterType(
@@ -109,7 +105,6 @@ class DIReflector
         ReflectionParameter $parameter,
         mixed $value
     ): mixed {
-        $storage = $container->getStorage();
         try {
             $type = ($parameter->getType() ?? $parameter)->getName();
         } catch (\Error) {
@@ -117,6 +112,7 @@ class DIReflector
             return $value;
         }
 
+        $storage = $container->getStorage();
         if (isset($storage[DIContainer::BINDINGS][$type])) {
             $type = $storage[DIContainer::BINDINGS][$type];
         }
@@ -134,6 +130,7 @@ class DIReflector
         if (isset($storage[DIContainer::NAMED]['$' . $parameter->name])) {
             return $storage[DIContainer::NAMED]['$' . $parameter->name];
         }
+
         try {
             return $value ?? $parameter?->getDefaultValue();
         } catch (\ReflectionException $e) {
