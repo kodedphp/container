@@ -21,8 +21,8 @@ before_script:
   - composer update -o --no-interaction --prefer-source
 
 script:
-  - vendor/bin/phpunit --coverage-clover=build/clover.xml
+  - vendor/bin/phpunit --coverage-clover=build/clover.xml --coverage-xml=build/coverage/coverage-xml --log-junit=build/coverage/junit.xml
 
 after_script:
   - vendor/bin/ocular code-coverage:upload --format=php-clover build/clover.xml
-  - XDEBUG_MODE=coverage vendor/bin/infection --threads=4 --min-msi=77 --min-covered-msi=77 --log-verbosity=none
+  - XDEBUG_MODE=coverage vendor/bin/infection --coverage=build/coverage --threads=4 --min-msi=77 --min-covered-msi=77 --log-verbosity=none
