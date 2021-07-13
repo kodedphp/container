@@ -10,7 +10,7 @@ Dependency Injection Container - Koded
 
 
 `koded/container` is an OOP application bootstrapping and wiring library.
-In other words, `Koded\DIContainer` implements a **design pattern** called **Dependency Injection**.
+In other words, `Koded\DIContainer` implements a **design pattern** called **Dependency Inversion**.
 The main principle of DIP is to separate the behavior from dependency resolution.
 
 ```bash
