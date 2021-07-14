@@ -6,10 +6,8 @@
         ],
         "excludes": [
             "vendor",
-            "Tests",
             "bench",
             "bin",
-            "build",
             "docker",
             "docs"
         ]
