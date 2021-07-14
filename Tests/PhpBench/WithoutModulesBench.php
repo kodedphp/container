@@ -7,33 +7,25 @@ use Koded\Tests\Unit\{TestClassWithInterfaceAndNoConstructor,
     TestInterface,
     TestOtherInterface};
 
+use PhpBench\Attributes as Bench;
+
+#[Bench\Revs(10000)]
+#[Bench\Iterations(3)]
 class WithoutModulesBench extends AbstractBench
 {
-    /**
-     * @Revs(10000)
-     * @Iterations(3)
-     * @assert(100)
-     */
+   #[Bench\Assert('mode(variant.time.avg) < 100 ms')]
     public function benchInject()
     {
         $this->di->bind(TestInterface::class, TestClassWithInterfaceAndNoConstructor::class);
         $this->di->new(TestClassWithConstructorInterfaceDependency::class);
     }
 
-    /**
-     * @Revs(10000)
-     * @Iterations(3)
-     */
     public function benchSingleton()
     {
         $this->di->bind(TestInterface::class, TestClassWithInterfaceAndNoConstructor::class);
         $this->di->singleton(TestClassWithConstructorInterfaceDependency::class);
     }
 
-    /**
-     * @Revs(10000)
-     * @Iterations(3)
-     */
     public function benchPsr11()
     {
         $this->di->bind(TestInterface::class, TestClassWithInterfaceAndNoConstructor::class);
@@ -41,20 +33,14 @@ class WithoutModulesBench extends AbstractBench
         $this->di->get(TestClassWithConstructorInterfaceDependency::class);
     }
 
-    /**
-     * @Revs(10000)
-     * @Iterations(1)
-     */
+    #[Bench\Iterations(5)]
     public function benchBind()
     {
         $this->di->bind(TestInterface::class, TestClassWithInterfaceAndNoConstructor::class);
         $this->di->bind(TestOtherInterface::class, TestClassWithConstructorInterfaceDependency::class);
     }
 
-    /**
-     * @Revs(10000)
-     * @Iterations(1)
-     */
+    #[Bench\Iterations(5)]
     public function benchNamed()
     {
         $this->di->named('$pdo', new \PDO('sqlite:'));

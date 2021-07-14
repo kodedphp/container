@@ -9,13 +9,13 @@ use Koded\Tests\Unit\{DatabasePostRepository,
     PostRepository,
     UserRepository};
 
+use PhpBench\Attributes as Bench;
+
 class SimpleAppBench extends AbstractBench
 {
-    /**
-     * @Revs(1000)
-     * @Iterations(5)
-     * @Assert(1000)
-     */
+    #[Bench\Revs(1000)]
+    #[Bench\Iterations(5)]
+    #[Bench\Assert('mode(variant.time.avg) < 1000 ms')]
     public function benchAppInvoke()
     {
         $dispatcher = $this->di->new(PostCommandDispatcher::class, ['hello']);

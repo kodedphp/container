@@ -8,41 +8,30 @@ use Koded\Tests\Unit\{TestClassWithInterfaceAndNoConstructor,
     TestInterface,
     TestOtherInterface};
 
+use PhpBench\Attributes as Bench;
+
+#[Bench\Revs(10000)]
+#[Bench\Iterations(3)]
 class WithModulesBench extends AbstractBench
 {
-    /**
-     * @Revs(10000)
-     * @Iterations(3)
-     * @Assert(100)
-     */
+    #[Bench\Assert('mode(variant.time.avg) < 100 ms')]
     public function benchInject()
     {
         $this->di->new(TestClassWithConstructorInterfaceDependency::class);
     }
 
-    /**
-     * @Revs(10000)
-     * @Iterations(3)
-     */
     public function benchSingleton()
     {
         $this->di->singleton(TestClassWithConstructorInterfaceDependency::class);
     }
 
-    /**
-     * @Revs(10000)
-     * @Iterations(3)
-     */
     public function benchPsr11()
     {
         $this->di->singleton(TestClassWithConstructorInterfaceDependency::class);
         $this->di->get(TestClassWithConstructorInterfaceDependency::class);
     }
 
-    /**
-     * @Revs(10000)
-     * @Iterations(1)
-     */
+    #[Bench\Iterations(5)]
     public function benchNamed()
     {
         $this->di->named('$pdo', new \PDO('sqlite:'));
