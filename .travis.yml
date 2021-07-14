@@ -10,8 +10,7 @@ cache:
     - $HOME/.composer/cache
 
 php:
-  - 8.0.1
-  - 8.0.2
+  - 8.0.7
   - nightly
 
 jobs:
