@@ -131,7 +131,7 @@ class DIReflector
         }
 
         try {
-            return $value ?? $parameter?->getDefaultValue();
+            return $value ?? $parameter->getDefaultValue();
         } catch (\ReflectionException $e) {
             if ($parameter->getType()?->isBuiltin()) {
                 throw DIException::forMissingArgument($type, $parameter, $e);
