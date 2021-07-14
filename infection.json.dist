@@ -1,5 +1,5 @@
 {
-    "timeout": 10,
+    "timeout": 25,
     "source": {
         "directories": [
             "."
@@ -20,13 +20,10 @@
             "branch": "master"
         }
     },
-    "tmpDir": "./build/infection/",
     "phpUnit": {
         "customPath": "./vendor/bin/phpunit"
     },
     "mutators": {
         "@default": true
-    },
-    "testFramework": "phpunit",
-    "bootstrap": "./Tests/bootstrap.php"
+    }
 }
