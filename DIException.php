@@ -60,7 +60,9 @@ class DIException extends \LogicException implements ContainerExceptionInterface
             $dependency->isInterface() => 'interface',
             $dependency->isAbstract() => 'abstract class',
             $dependency->isTrait() => 'trait',
+            // @codeCoverageIgnoreStart
             default => 'class',
+            // @codeCoverageIgnoreEnd
         };
         return new static(static::E_CANNOT_INSTANTIATE, [':name' => $dependency->name, ':type' => $type]);
     }
