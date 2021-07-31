@@ -73,6 +73,7 @@ class DIContainer implements DIContainerInterface
     private array $bindings = [];
     private array $exclude = [];
     private array $named = [];
+    private array $map = [];
 
     public function __construct(DIModule ...$modules)
     {
@@ -87,6 +88,7 @@ class DIContainer implements DIContainerInterface
         $this->inProgress = [];
         $this->singletons = [];
         $this->named      = [];
+        $this->map        = [];
     }
 
     public function __destruct()
@@ -95,6 +97,7 @@ class DIContainer implements DIContainerInterface
         $this->bindings   = [];
         $this->exclude    = [];
         $this->named      = [];
+        $this->map        = [];
     }
 
     /**
@@ -123,7 +126,6 @@ class DIContainer implements DIContainerInterface
             throw DIException::forCircularDependency($binding);
         }
         $this->inProgress[$binding] = true;
-
         try {
             return $this->newInstance($binding, $arguments);
         } finally {
@@ -161,7 +163,7 @@ class DIContainer implements DIContainerInterface
     public function share(object $instance, array $exclude = []): DIContainerInterface
     {
         $class = $instance::class;
-        $this->bindInterfaces($instance, $class);
+        $this->bindInterfaces($class, $class);
         $this->singletons[$class] = $instance;
         $this->bindings[$class]   = $class;
         foreach ($exclude as $name) {
@@ -187,9 +189,18 @@ class DIContainer implements DIContainerInterface
         if ('$' === ($class[0] ?? null)) {
             $this->bindings[$interface] = $interface;
             $class && $this->bindings[$class] = $interface;
-        } else {
-            $this->bindings[$interface] = $class ?: $interface;
-            $class && $this->bindings[$class] = $class;
+            return $this;
+        }
+        if (empty($class)) {
+            foreach (class_implements($interface) as $i) {
+                $this->map[$i] = $interface;
+            }
+            return $this;
+        }
+        $this->bindings[$interface] = $class;
+        $this->bindInterfaces($interface, $class);
+        if (isset($this->map[$interface])) {
+            $this->bindings[$this->map[$interface]] = $class;
         }
         return $this;
     }
@@ -256,12 +267,11 @@ class DIContainer implements DIContainerInterface
         return $this->bindings[$dependency] ?? $dependency;
     }
 
-    private function bindInterfaces(object $dependency, string $class): void
+    private function bindInterfaces(object|string $dependency, string $class): void
     {
         foreach (\class_implements($dependency) as $interface) {
             if (isset($this->bindings[$interface])) {
                 $this->bindings[$interface] = $class;
-                break;
             }
         }
     }
