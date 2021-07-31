@@ -165,7 +165,6 @@ class DIContainer implements DIContainerInterface
         $class = $instance::class;
         $this->bindInterfaces($class, $class);
         $this->singletons[$class] = $instance;
-        $this->bindings[$class]   = $class;
         foreach ($exclude as $name) {
             $this->exclude[$name][$class] = $class;
         }
@@ -191,18 +190,7 @@ class DIContainer implements DIContainerInterface
             $class && $this->bindings[$class] = $interface;
             return $this;
         }
-        if (empty($class)) {
-            foreach (class_implements($interface) as $i) {
-                $this->map[$i] = $interface;
-            }
-            return $this;
-        }
-        $this->bindings[$interface] = $class;
-        $this->bindInterfaces($interface, $class);
-        if (isset($this->map[$interface])) {
-            $this->bindings[$this->map[$interface]] = $class;
-        }
-        return $this;
+        return $this->bindInterfaces($interface, $class);
     }
 
     /**
@@ -267,13 +255,25 @@ class DIContainer implements DIContainerInterface
         return $this->bindings[$dependency] ?? $dependency;
     }
 
-    private function bindInterfaces(object|string $dependency, string $class): void
+    private function bindInterfaces(string $dependency, string $class): static
     {
+        if (empty($class)) {
+            foreach (\class_implements($dependency) as $interface) {
+                $this->map[$interface] = $dependency;
+            }
+            return $this;
+        }
+        $this->bindings[$dependency] = $class;
         foreach (\class_implements($dependency) as $interface) {
             if (isset($this->bindings[$interface])) {
                 $this->bindings[$interface] = $class;
                 break;
             }
         }
+        if (isset($this->map[$dependency])) {
+            $this->bindings[$this->map[$dependency]] = $class;
+            unset($this->map[$dependency]);
+        }
+        return $this;
     }
 }
