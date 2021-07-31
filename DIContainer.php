@@ -272,6 +272,7 @@ class DIContainer implements DIContainerInterface
         foreach (\class_implements($dependency) as $interface) {
             if (isset($this->bindings[$interface])) {
                 $this->bindings[$interface] = $class;
+                break;
             }
         }
     }
