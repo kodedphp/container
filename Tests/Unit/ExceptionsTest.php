@@ -91,6 +91,14 @@ class ExceptionsTest extends DITestCase
         ($this->di)([new TestExceptionForInvokeMethod, 'fail']);
     }
 
+    public function testInterfaceToInterfaceBinding()
+    {
+        $this->expectException(DIException::class);
+        $this->expectExceptionCode(DIException::E_CANNOT_BIND_INTERFACE);
+        $this->expectExceptionMessage('Only interface to class binding is allowed. Cannot bind interface ');
+        $this->di->bind(TestInterface::class, TestOtherInterface::class);
+    }
+
     protected function createContainer(): DIContainer
     {
         return new DIContainer;
