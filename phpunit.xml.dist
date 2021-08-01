@@ -7,7 +7,7 @@
          verbose="true"
          colors="true">
     <testsuites>
-        <testsuite name="Koded Dependency Injection Container Test Suite">
+        <testsuite name="Koded Dependency Injection Container - Test Suite">
             <directory>Tests/Unit</directory>
         </testsuite>
     </testsuites>
@@ -21,8 +21,4 @@
             <file>DIException.php</file>
         </include>
     </coverage>
-    <!--    <logging>-->
-    <!--        <log type="coverage-html" target="build/coverage-html"/>-->
-    <!--        <log type="coverage-clover" target="build/clover.xml"/>-->
-    <!--    </logging>-->
 </phpunit>

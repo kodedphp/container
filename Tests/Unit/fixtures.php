@@ -1,6 +1,6 @@
 <?php
 
-namespace Koded\Tests\Unit;
+namespace Tests\Koded\Unit;
 
 use ArrayIterator;
 use Countable;
@@ -20,6 +20,10 @@ interface UserRepository
 }
 
 interface TestInterface
+{
+}
+
+interface TestChildInterface extends TestInterface
 {
 }
 
@@ -153,13 +157,28 @@ class TestClassWithoutConstructorArguments extends ArrayIterator
     }
 }
 
-class TestClassWithInterfaceAndNoConstructor implements TestInterface
+class TestClassWithInterfaceAndNoConstructor implements TestInterface, TestChildInterface
 {
+}
+
+class TestDependencyWithExtendedInterface
+{
+    private TestChildInterface $dependency;
+
+    public function __construct(TestChildInterface $dependency)
+    {
+        $this->dependency = $dependency;
+    }
+
+    public function getDependency() //: TestChildInterface
+    {
+        return $this->dependency;
+    }
 }
 
 class TestClassWithConstructorInterfaceDependency
 {
-    private $dependency;
+    private TestInterface $dependency;
 
     public function __construct(TestInterface $arg)
     {
@@ -337,3 +356,4 @@ class TestClassC
 class TestClassD
 {
 }
+

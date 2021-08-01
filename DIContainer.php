@@ -123,7 +123,6 @@ class DIContainer implements DIContainerInterface
             throw DIException::forCircularDependency($binding);
         }
         $this->inProgress[$binding] = true;
-
         try {
             return $this->newInstance($binding, $arguments);
         } finally {
@@ -161,9 +160,8 @@ class DIContainer implements DIContainerInterface
     public function share(object $instance, array $exclude = []): DIContainerInterface
     {
         $class = $instance::class;
-        $this->bindInterfaces($instance, $class);
         $this->singletons[$class] = $instance;
-        $this->bindings[$class]   = $class;
+        $this->bindInterfaces($class, $class);
         foreach ($exclude as $name) {
             $this->exclude[$name][$class] = $class;
         }
@@ -187,10 +185,9 @@ class DIContainer implements DIContainerInterface
         if ('$' === ($class[0] ?? null)) {
             $this->bindings[$interface] = $interface;
             $class && $this->bindings[$class] = $interface;
-        } else {
-            $this->bindings[$interface] = $class ?: $interface;
-            $class && $this->bindings[$class] = $class;
+            return $this;
         }
+        $this->bindInterfaces($interface, $class);
         return $this;
     }
 
@@ -256,13 +253,28 @@ class DIContainer implements DIContainerInterface
         return $this->bindings[$dependency] ?? $dependency;
     }
 
-    private function bindInterfaces(object $dependency, string $class): void
+    private function bindInterfaces(string $dependency, string $class): void
+    {
+        if (\interface_exists($class)) {
+            throw DIException::forInterfaceBinding($dependency, $class);
+        }
+        $this->bindings[$dependency] = $class;
+        foreach ($this->bindings as $dependency => $class) {
+            $this->mapDeferred($dependency, $class);
+        }
+    }
+
+    private function mapDeferred(string $dependency, string $class): void
     {
         foreach (\class_implements($dependency) as $interface) {
-            if (isset($this->bindings[$interface])) {
-                $this->bindings[$interface] = $class;
-                break;
+            if (false === isset($this->bindings[$interface])) {
+                continue;
             }
+            if (false === empty($class)) {
+                $this->bindings[$interface] = $class;
+            }
+            $this->bindings[$dependency] = $this->bindings[$interface];
+            break;
         }
     }
 }
