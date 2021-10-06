@@ -272,6 +272,7 @@ class DIContainer implements DIContainerInterface
             }
             if (false === empty($class)) {
                 $this->bindings[$interface] = $class;
+                continue;
             }
             $this->bindings[$dependency] = $this->bindings[$interface];
             break;
