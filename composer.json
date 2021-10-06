@@ -39,10 +39,7 @@
     "infection/infection": "^0.23",
     "phpbench/phpbench": "^1",
     "scrutinizer/ocular": "dev-master",
-    "symfony/var-dumper": "^5",
-    "koded/http": "^3",
-    "koded/logging": "^3",
-    "koded/cache-simple": "^3"
+    "symfony/var-dumper": "^5"
   },
   "autoload-dev": {
     "psr-4": {
@@ -51,7 +48,7 @@
   },
   "extra": {
     "branch-alias": {
-      "dev-master": "2.0-dev"
+      "dev-master": "2.x-dev"
     }
   },
   "config": {
