@@ -1,6 +1,6 @@
 <?php
 
-namespace Koded\Tests\Unit;
+namespace Tests\Koded\Unit;
 
 use ArrayObject;
 use Koded\DIContainer;

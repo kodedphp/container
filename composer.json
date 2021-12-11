@@ -43,7 +43,8 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Koded\\Tests\\": "Tests/"
+      "Tests\\Koded\\Unit\\": "Tests/Unit",
+      "Tests\\Koded\\PhpBench\\": "Tests/PhpBench"
     }
   },
   "extra": {
