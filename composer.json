@@ -46,7 +46,8 @@
     }
   },
   "config": {
-    "optimize-autoloader": true
+    "optimize-autoloader": true,
+    "sort-packages": true
   },
   "provide": {
     "psr/container-implementation": "^2"
