@@ -2,7 +2,7 @@
 
 namespace Tests\Koded\Unit;
 
-use Koded\{DIContainer, DIException};
+use Koded\{DIContainer, DIException, DIStorage};
 
 class NamedMethodTest extends DITestCase
 {
@@ -10,9 +10,12 @@ class NamedMethodTest extends DITestCase
     {
         $name = '$name';
         $this->di->named($name, 42);
-        $this->assertSame(42, $this->di->getStorage()[DIContainer::NAMED][$name]);
-        $this->assertEmpty($this->di->getStorage()[DIContainer::BINDINGS]);
-        $this->assertEmpty($this->di->getStorage()[DIContainer::SINGLETONS]);
+
+        $this->assertSame(42, $this->di->getFromStorage(DIStorage::NAMED, $name));
+        $this->assertNull($this->di->getFromStorage(DIStorage::NAMED, '$fubar'));
+
+        $this->assertEmpty($this->di->getFromStorage(DIStorage::BINDINGS));
+        $this->assertEmpty($this->di->getFromStorage(DIStorage::SINGLETONS));
     }
 
     /**

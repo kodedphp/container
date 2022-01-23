@@ -2,15 +2,15 @@
 
 namespace Tests\Koded\Unit;
 
-use Koded\{DIContainer, DIModule};
+use Koded\{DIContainer, DIModule, DIStorage};
 
 class DIModuleTest extends DITestCase
 {
     public function testBindMethod()
     {
-        $this->assertArrayHasKey(TestOtherInterface::class, $this->di->getStorage()[DIContainer::BINDINGS]);
-        $this->assertArrayHasKey(TestInterface::class, $this->di->getStorage()[DIContainer::BINDINGS]);
-        $this->assertArrayHasKey(DatabaseConnection::class, $this->di->getStorage()[DIContainer::BINDINGS]);
+        $this->assertArrayHasKey(TestOtherInterface::class, $this->di->getFromStorage(DIStorage::BINDINGS));
+        $this->assertArrayHasKey(TestInterface::class, $this->di->getFromStorage(DIStorage::BINDINGS));
+        $this->assertArrayHasKey(DatabaseConnection::class, $this->di->getFromStorage(DIStorage::BINDINGS));
     }
 
     protected function createContainer(): DIContainer
