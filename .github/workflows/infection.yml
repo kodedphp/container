@@ -1,0 +1,54 @@
+name: Infection Testing
+
+on:
+  - push
+  - pull_request
+
+env:
+  MINMSI: 75
+  MINCOVERED: 75
+
+jobs:
+  tests:
+    name: Infection testing on ${{ matrix.php-version }} - ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest ]
+        php-version:
+          - '8.1'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup PHP ${{ matrix.php-version }} (${{ matrix.os }})
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: json, mbstring, pdo, pdo_sqlite, zip
+          ini-values: zend.assertions=1, opcache.
+          coverage: pcov
+          tools: composer:v2
+
+      - name: Cache composer dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-${{ runner.os }}-${{ matrix.php-version }}-${{ hashFiles('**/composer.json') }}
+          restore-keys: |
+            composer-${{ runner.os }}-${{ matrix.php-version }}-
+            composer-${{ runner.os }}-
+            composer-
+
+      - name: Install composer dependencies
+        run: composer update -o --prefer-stable --no-progress --no-interaction
+
+      - name: Create coverage report
+        run: vendor/bin/phpunit --stop-on-failure --coverage-xml=build/coverage/coverage-xml --log-junit=build/coverage/junit.xml
+
+      - name: Run Infection
+        run: vendor/bin/infection -j2 --skip-initial-tests --min-msi=$MINMSI --min-covered-msi=MINCOVERED --coverage=build/coverage --log-verbosity=none --no-interaction --no-progress
+        env:
+          INFECTION_BADGE_API_KEY: ${{ secrets.INFECTION_BADGE_API_KEY }}

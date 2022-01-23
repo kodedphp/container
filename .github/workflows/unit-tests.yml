@@ -1,0 +1,46 @@
+name: Unit Tests
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  testsuite:
+    name: PHP ${{ matrix.php-version }} - ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.experimental }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest ]
+        experimental: [false]
+        php-version:
+          - '8.1'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup PHP ${{ matrix.php-version }} (${{ matrix.os }})
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: json, mbstring, pdo, pdo_sqlite, zip
+          ini-values: zend.assertions=1, opcache.
+          coverage: none
+
+      - name: Cache composer dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-${{ runner.os }}-${{ matrix.php-version }}-${{ hashFiles('**/composer.json') }}
+          restore-keys: |
+            composer-${{ runner.os }}-${{ matrix.php-version }}-
+            composer-${{ runner.os }}
+            composer-
+
+      - name: Install composer dependencies
+        run: composer update -o --prefer-stable --no-progress --no-interaction
+
+      - name: Run PHPUnit
+        run: vendor/bin/phpunit --verbose

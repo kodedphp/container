@@ -1,0 +1,45 @@
+name: PHPBench
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  tests:
+    name: Benchmarks on ${{ matrix.php-version }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest ]
+        php-version:
+          - '8.1'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup PHP ${{ matrix.php-version }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: dom, iconv, json, pcre, reflection, spl, tokenizer
+          ini-values: zend.assertions=1, opcache.enable=0
+          coverage: none
+
+      - name: Cache composer dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-${{ runner.os }}-${{ matrix.php-version }}-${{ hashFiles('**/composer.json') }}
+          restore-keys: |
+            composer-${{ runner.os }}-${{ matrix.php-version }}-
+            composer-${{ runner.os }}-
+            composer-
+
+      - name: Install composer dependencies
+        run: composer update -o --prefer-stable --no-progress --no-interaction
+
+      - name: Run benchmarks
+        run: vendor/bin/phpbench run --report=default
