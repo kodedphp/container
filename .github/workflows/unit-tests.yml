@@ -31,7 +31,7 @@ jobs:
       - name: Cache composer dependencies
         uses: actions/cache@v2
         with:
-          path: ${{ steps.composer-cache.outputs.dir }}
+          path: vendor
           key: composer-${{ runner.os }}-${{ matrix.php-version }}-${{ hashFiles('**/composer.json') }}
           restore-keys: |
             composer-${{ runner.os }}-${{ matrix.php-version }}-
