@@ -17,7 +17,7 @@
     "logs": {
         "text": "./build/infection/infection.log",
         "stryker": {
-            "badge": "~^refs/tags/.*$~"
+            "badge": "master"
         }
     },
     "phpUnit": {
