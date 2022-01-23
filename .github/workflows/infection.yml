@@ -5,8 +5,8 @@ on:
   - pull_request
 
 env:
-  MINMSI: 75
-  MINCOVERED: 75
+  MINMSI: 69
+  MINCOVERED: 69
 
 jobs:
   tests:
