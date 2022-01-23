@@ -73,9 +73,9 @@ class PostService {
 }
 ```
 
-Then somewhere we might have a handler/controller that asks for it's own dependencies:
+Then somewhere we might have a handler/controller that asks for its own dependencies:
 ```php
-class HttpPostHandler {
+class BlogHandler {
     public function get(ServerRequestInterface $request, PostService $service): ResponseInterface {
         $slug = slugify($request->getUri()->getPath());
         $post = $service->findBlogPostBySlug($slug);
@@ -111,13 +111,13 @@ And finally in the dispatcher file, we process the request
 // index.php
 
 // (resolved through an HTTP router or other means)
-$resolvedDispatcher = HttpPostHandler::class;
-$resolvedMethod = 'get';
+$handler = BlogHandler::class;
+$method = 'get';
 
 // by invoking the container
-$response = (new DIContainer(new BlogModule))([$resolvedDispatcher, $resolvedMethod]);
+$response = (new DIContainer(new BlogModule))([$handler, $method]);
 
-// we have a `$response` object to output the blog content
+// we have a `$response` object to output the content
 // ex. `echo $response->getBody()->getContents();`
 ```
 
@@ -134,7 +134,7 @@ Code quality
 
 [![Code Coverage](https://scrutinizer-ci.com/g/kodedphp/container/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/kodedphp/container/?branch=master)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/kodedphp/container/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/kodedphp/container/?branch=master)
-[![Infection MSI](https://badge.stryker-mutator.io/github.com/kodedphp/container/master)](https://github.com/kodedphp/container)
+[![Infection MSI](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fkodedphp%2Fcontainer%2Fmaster)](https://dashboard.stryker-mutator.io/reports/github.com/kodedphp/container/master)
 
 ```shell script
 vendor/bin/infection --threads=4
