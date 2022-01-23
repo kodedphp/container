@@ -35,8 +35,6 @@ jobs:
           key: composer-${{ runner.os }}-${{ matrix.php-version }}-${{ hashFiles('**/composer.json') }}
           restore-keys: |
             composer-${{ runner.os }}-${{ matrix.php-version }}-
-            composer-${{ runner.os }}
-            composer-
 
       - name: Install composer dependencies
         run: composer update -o --prefer-stable --no-progress --no-interaction
