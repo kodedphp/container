@@ -1,12 +1,9 @@
 Dependency Injection Container - Koded
 --------------------------------------
 
+[![CI](https://github.com/kodedphp/container/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/kodedphp/container/actions/workflows/unit-tests.yml)
 [![Latest Stable Version](https://img.shields.io/packagist/v/koded/container.svg)](https://packagist.org/packages/koded/container)
-[![Build Status](https://travis-ci.com/kodedphp/container.svg?branch=master)](https://travis-ci.com/kodedphp/container)
-[![Code Coverage](https://scrutinizer-ci.com/g/kodedphp/container/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/kodedphp/container/?branch=master)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/kodedphp/container/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/kodedphp/container/?branch=master)
-[![Infection MSI](https://badge.stryker-mutator.io/github.com/kodedphp/container/master)](https://github.com/kodedphp/container)
-[![Minimum PHP Version: 7.2](https://img.shields.io/badge/php-%3E%3D%208.0-8892BF.svg)](https://php.net/)
+[![Minimum PHP Version: 8.1](https://img.shields.io/badge/php-%3E%3D%208.1-8892BF.svg)](https://php.net/)
 
 
 `koded/container` is an OOP application bootstrapping and wiring library.
@@ -89,7 +86,12 @@ class HttpPostHandler {
 }
 ```
 
-This is the bootstrapping / wiring application module
+### Wire All The Things
+
+This is the bootstrapping / wiring application module 
+(or container's "configuration" class) where all known dependencies
+are binded and shared
+
 ```php
 class BlogModule implements DIModule {
     public function configure(DIContainer $container): void {
@@ -104,7 +106,7 @@ class BlogModule implements DIModule {
 }
 ```
 
-And finally in the dispatcher file, we execute the request
+And finally in the dispatcher file, we process the request
 ```php
 // index.php
 
@@ -121,7 +123,7 @@ $response = (new DIContainer(new BlogModule))([$resolvedDispatcher, $resolvedMet
 
 The container implements the [__invoke()][invoke] method, so the instance can be used as a function:
 ```php
-$container('method', 'arguments');
+$container('method', ['arg1', 'arg2', ...]);
 ```
 
 > To be continued...
@@ -129,6 +131,10 @@ $container('method', 'arguments');
 
 Code quality
 ------------
+
+[![Code Coverage](https://scrutinizer-ci.com/g/kodedphp/container/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/kodedphp/container/?branch=master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/kodedphp/container/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/kodedphp/container/?branch=master)
+[![Infection MSI](https://badge.stryker-mutator.io/github.com/kodedphp/container/master)](https://github.com/kodedphp/container)
 
 ```shell script
 vendor/bin/infection --threads=4
