@@ -6,7 +6,7 @@
   "report.generators": {
     "default": {
       "generator": "expression",
-      "cols": ["benchmark","subject","revs","its","best","mean","worst","stdev","rstdev"]
+      "cols": ["benchmark","subject","mean","stdev","rstdev"]
     }
   }
 }

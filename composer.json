@@ -19,8 +19,8 @@
   ],
   "prefer-stable": true,
   "require": {
-    "php": "^8",
-    "psr/container": "^1"
+    "php": "^8.1",
+    "psr/container": "^2"
   },
   "autoload": {
     "classmap": [
@@ -36,22 +36,19 @@
     "ext-pdo": "*",
     "ext-json": "*",
     "phpunit/phpunit": "^9",
-    "infection/infection": "^0.23",
-    "phpbench/phpbench": "^1",
-    "scrutinizer/ocular": "dev-master",
-    "symfony/var-dumper": "^5"
+    "infection/infection": "^0.26",
+    "phpbench/phpbench": "^1"
   },
   "autoload-dev": {
     "psr-4": {
-      "Tests\\Koded\\": "Tests/"
-    }
-  },
-  "extra": {
-    "branch-alias": {
-      "dev-master": "2.x-dev"
+      "Tests\\Koded\\Unit\\": "Tests/Unit",
+      "Tests\\Koded\\PhpBench\\": "Tests/PhpBench"
     }
   },
   "config": {
     "optimize-autoloader": true
+  },
+  "provide": {
+    "psr/container-implementation": "^2"
   }
 }

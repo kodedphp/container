@@ -3,7 +3,7 @@
 namespace Tests\Koded\PhpBench;
 
 use Koded\{DIContainer, DIModule};
-use Koded\Tests\Unit\{DatabasePostRepository,
+use Tests\Koded\Unit\{DatabasePostRepository,
     DatabaseUserRepository,
     PostCommandDispatcher,
     PostRepository,

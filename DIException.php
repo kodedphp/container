@@ -13,8 +13,16 @@
 namespace Koded;
 
 use Psr\Container\{ContainerExceptionInterface, NotFoundExceptionInterface};
+use LogicException;
+use ReflectionClass;
+use ReflectionException;
+use ReflectionParameter;
+use Throwable;
+use function array_filter;
+use function join;
+use function strtr;
 
-class DIException extends \LogicException implements ContainerExceptionInterface
+class DIException extends LogicException implements ContainerExceptionInterface
 {
     public const
         E_CIRCULAR_DEPENDENCY = 7001,
@@ -37,10 +45,10 @@ class DIException extends \LogicException implements ContainerExceptionInterface
         self::E_REFLECTION_ERROR => ':message',
     ];
 
-    public function __construct(int $code, array $arguments = [], \Throwable $previous = null)
+    public function __construct(int $code, array $arguments = [], Throwable $previous = null)
     {
         parent::__construct(
-            \strtr($this->messages[$code] ?? ':message', $arguments + [':message' => $this->message]),
+            strtr($this->messages[$code] ?? ':message', $arguments + [':message' => $this->message]),
             $code,
             $previous
         );
@@ -61,7 +69,7 @@ class DIException extends \LogicException implements ContainerExceptionInterface
         ]);
     }
 
-    public static function cannotInstantiate(\ReflectionClass $dependency): static
+    public static function cannotInstantiate(ReflectionClass $dependency): static
     {
         $type = match (true) {
             $dependency->isInterface() => 'interface',
@@ -85,21 +93,21 @@ class DIException extends \LogicException implements ContainerExceptionInterface
     }
 
     public static function forMissingArgument(
-        string $name,
-        \ReflectionParameter $parameter,
-        \Throwable $previous = null): static
+        string              $name,
+        ReflectionParameter $parameter,
+        Throwable           $previous = null): static
     {
         return new static(static::E_MISSING_ARGUMENT, [
             ':name' => $name,
             ':position' => $parameter->getPosition(),
-            ':function' => \join('::', \array_filter([
+            ':function' => join('::', array_filter([
                 $parameter->getDeclaringClass()?->name,
                 $parameter->getDeclaringFunction()?->name
             ]))
         ], $previous);
     }
 
-    public static function forReflectionError(\ReflectionException $exception): static
+    public static function forReflectionError(ReflectionException $exception): static
     {
         return new static(static::E_REFLECTION_ERROR, [
             ':message' => $exception->getMessage()

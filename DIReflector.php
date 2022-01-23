@@ -13,20 +13,24 @@
 namespace Koded;
 
 use Closure;
+use Error;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionFunction;
 use ReflectionFunctionAbstract;
 use ReflectionMethod;
 use ReflectionParameter;
+use function array_intersect;
+use function array_keys;
+use function gettype;
 
 class DIReflector
 {
     public function newInstance(
-        DIContainerInterface $container,
-        string $class,
-        array $arguments
-    ): object {
+        IContainer $container,
+        string     $class,
+        array      $arguments): object
+    {
         try {
             $dependency = new ReflectionClass($class);
         } catch (ReflectionException $e) {
@@ -47,16 +51,16 @@ class DIReflector
     }
 
     /**
-     * @param DIContainerInterface       $container
+     * @param IContainer $container
      * @param ReflectionFunctionAbstract $method
-     * @param array                      $arguments
+     * @param array $arguments
      * @return array
      */
     public function processMethodArguments(
-        DIContainerInterface $container,
+        IContainer                 $container,
         ReflectionFunctionAbstract $method,
-        array $arguments
-    ): array {
+        array                      $arguments): array
+    {
         $args = $method->getParameters();
         foreach ($args as $i => $param) {
             $args[$i] = $this->getFromParameterType($container, $param, $arguments[$i] ?? null);
@@ -71,7 +75,7 @@ class DIReflector
      */
     public function newMethodFromCallable(callable $callable): ReflectionFunctionAbstract
     {
-        return match (\gettype($callable)) {
+        return match (gettype($callable)) {
             'array' => new ReflectionMethod(...$callable),
             'object' => $callable instanceof Closure
                 ? new ReflectionFunction($callable)
@@ -81,10 +85,10 @@ class DIReflector
     }
 
     protected function getFromParameterType(
-        DIContainerInterface $container,
+        IContainer          $container,
         ReflectionParameter $parameter,
-        mixed $value
-    ): mixed {
+        mixed               $value): mixed
+    {
         if (!$class = $parameter->getType()) {
             return $arguments[$parameter->getPosition()]
                 ?? $this->getFromParameter($container, $parameter, $value);
@@ -100,39 +104,33 @@ class DIReflector
     }
 
     protected function getFromParameter(
-        DIContainerInterface $container,
+        IContainer          $container,
         ReflectionParameter $parameter,
-        mixed $value
-    ): mixed {
+        mixed               $value): mixed
+    {
         try {
             $type = ($parameter->getType() ?? $parameter)->getName();
-        } catch (\Error) {
+        } catch (Error) {
             // i.e. for ReflectionUnionType, continue with processing
             return $value;
         }
 
-        $storage = $container->getStorage();
-        if (isset($storage[DIContainer::BINDINGS][$type])) {
-            $type = $storage[DIContainer::BINDINGS][$type];
-        }
-        if (isset($storage[DIContainer::EXCLUDE][$type])) {
-            if (\array_intersect(
-                $storage[DIContainer::EXCLUDE][$type],
-                \array_keys($storage[DIContainer::SINGLETONS])
-            )) {
+        $type = $container->getBinding($type);
+        if ($_ = $container->getFromStorage(DIStorage::EXCLUDE, $type)) {
+            if (array_intersect($_, array_keys($container->getFromStorage(DIStorage::SINGLETONS)))) {
                 return (clone $container)->new($type);
             }
         }
-        if (isset($storage[DIContainer::SINGLETONS][$type])) {
-            return $storage[DIContainer::SINGLETONS][$type];
+        if ($_ = $container->getFromStorage(DIStorage::SINGLETONS, $type)) {
+            return $_;
         }
-        if (isset($storage[DIContainer::NAMED]['$' . $parameter->name])) {
-            return $storage[DIContainer::NAMED]['$' . $parameter->name];
+        if ($_ = $container->getFromStorage(DIStorage::NAMED, $parameter->name)) {
+            return $_;
         }
 
         try {
             return $value ?? $parameter->getDefaultValue();
-        } catch (\ReflectionException $e) {
+        } catch (ReflectionException $e) {
             if ($parameter->getType()?->isBuiltin()) {
                 throw DIException::forMissingArgument($type, $parameter, $e);
             }

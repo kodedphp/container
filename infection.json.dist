@@ -16,8 +16,8 @@
     },
     "logs": {
         "text": "./build/infection/infection.log",
-        "badge": {
-            "branch": "master"
+        "stryker": {
+            "badge": "/^release-.*$/"
         }
     },
     "phpUnit": {

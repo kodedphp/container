@@ -2,7 +2,7 @@
 
 namespace Tests\Koded\PhpBench;
 
-use Koded\Tests\Unit\{TestClassWithInterfaceAndNoConstructor,
+use Tests\Koded\Unit\{TestClassWithInterfaceAndNoConstructor,
     TestClassWithConstructorInterfaceDependency,
     TestInterface,
     TestOtherInterface};
