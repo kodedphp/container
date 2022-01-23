@@ -46,6 +46,6 @@ jobs:
         run: vendor/bin/phpunit --stop-on-failure --coverage-xml=build/coverage/coverage-xml --log-junit=build/coverage/junit.xml
 
       - name: Run Infection
-        run: vendor/bin/infection -j2 --skip-initial-tests --min-msi=$MINMSI --min-covered-msi=MINCOVERED --coverage=build/coverage --log-verbosity=none --no-interaction --no-progress
+        run: vendor/bin/infection -j2 --skip-initial-tests --min-msi=$MINMSI --min-covered-msi=$MINCOVERED --coverage=build/coverage --log-verbosity=none --no-interaction --no-progress
         env:
           INFECTION_BADGE_API_KEY: ${{ secrets.INFECTION_BADGE_API_KEY }}
