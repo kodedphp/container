@@ -7,7 +7,7 @@ build:
           - php-scrutinizer-run
       environment:
         php:
-          version: '8.1.1'
+          version: '8.1.2'
 
 before_commands:
   - 'composer update -o --prefer-source --no-interaction'
