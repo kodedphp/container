@@ -6,7 +6,7 @@ on:
 
 env:
   MINMSI: 69
-  MINCOVERED: 69
+  MINCOVERED: 72
 
 jobs:
   tests:
