@@ -44,7 +44,6 @@ class DatabasePostRepository implements PostRepository
     {
         $this->pdo = $pdo;
     }
-
     public function findBySlug(string $slug)
     {
         // $this->pdo ...
@@ -60,7 +59,6 @@ class DatabaseUserRepository implements UserRepository
     {
         $this->pdo = $pdo;
     }
-
     public function findById(int $id)
     {
         // $this->pdo ...
@@ -77,7 +75,6 @@ class PostService
         $this->post = $post;
         $this->user = $user;
     }
-
     // a service method that uses the blog and user instances
     public function findBlogPostBySlug(string $slug): array
     {
@@ -96,13 +93,11 @@ class PostCommandDispatcher
         $this->slug    = $slug;
         $this->service = $service;
     }
-
     public function get(UserRepository $user): array
     {
         assert($user->findById(42) === 'anonymous');
         return $this->service->findBlogPostBySlug($this->slug);
     }
-
     public function __invoke(UserRepository $user): array
     {
         return $this->get($user);
@@ -117,17 +112,14 @@ class TestClassForInvokeMethod
     {
         $this->value = $value;
     }
-
     public static function value(string $value)
     {
         return $value;
     }
-
     public function __invoke($value)
     {
         return $this->get($value);
     }
-
     public function get($value)
     {
         return $value ?? $this->value;
@@ -139,13 +131,13 @@ class TestClassWithConstructorArguments implements JsonSerializable, Countable
     public function __construct(PDO $pdo)
     {
     }
-
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
+        return null;
     }
-
-    public function count()
+    public function count(): int
     {
+        return 4;
     }
 }
 
@@ -169,7 +161,6 @@ class TestDependencyWithExtendedInterface
     {
         $this->dependency = $dependency;
     }
-
     public function getDependency() //: TestChildInterface
     {
         return $this->dependency;
@@ -184,7 +175,6 @@ class TestClassWithConstructorInterfaceDependency
     {
         $this->dependency = $arg;
     }
-
     public function getDependency()
     {
         return $this->dependency;
@@ -216,22 +206,18 @@ class TestClassWithMixedArgumentTypeDependencies
     {
         return $this->first;
     }
-
     public function getSecond(): int
     {
         return $this->second;
     }
-
     public function getThird(): array
     {
         return $this->third;
     }
-
     public function getFourth(): TestClassB
     {
         return $this->fourth;
     }
-
     public function getFifth(): bool
     {
         return $this->fifth;
@@ -259,7 +245,6 @@ class TestClassWithMultipleDependencies
         $this->f = $f;
         $this->g = $g;
     }
-
     public function __get($dependency)
     {
         return $this->$dependency;
