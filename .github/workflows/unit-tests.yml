@@ -26,7 +26,7 @@ jobs:
         with:
           php-version: ${{ matrix.php-version }}
           extensions: json, mbstring, pdo, pdo_sqlite, zip
-          ini-values: zend.assertions=1, opcache.
+          ini-values: zend.assertions=1, opcache.enable=0
           coverage: none
 
       - name: Cache composer dependencies
