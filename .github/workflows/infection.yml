@@ -27,10 +27,9 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
-          extensions: json, mbstring, pdo, pdo_sqlite, zip
-          ini-values: zend.assertions=1, opcache.enable=0
-          coverage: pcov
+          ini-values: opcache.enable=0
           tools: composer:v2
+          coverage: pcov
 
       - name: Cache composer dependencies
         uses: actions/cache@v2

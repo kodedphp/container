@@ -13,7 +13,6 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest ]
-        experimental: [false]
         php-version:
           - '8.1'
 
@@ -25,9 +24,9 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
-          extensions: json, mbstring, pdo, pdo_sqlite, zip
           ini-values: zend.assertions=1, opcache.enable=0
-          coverage: none
+          tools: composer:v2
+          coverage: pcov
 
       - name: Cache composer dependencies
         uses: actions/cache@v2
