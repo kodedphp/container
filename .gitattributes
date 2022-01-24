@@ -3,12 +3,14 @@
 *.php diff=php
 *.md diff=markdown
 
+.git*        export-ignore
 tests/       export-ignore
 build/       export-ignore
 docs/        export-ignore
 vendor/      export-ignore
+
 phpunit.*    export-ignore
 infection.*  export-ignore
 phpbench.*   export-ignore
-.*           export-ignore
-.phpstorm.meta.php export
+
+.scrutinizer.yml export-ignore
