@@ -1,6 +1,7 @@
 build/
 vendor/
 .idea/
-.DS_Store/
+.DS_Store
+Thumbs.db
 *.lock
 *.bak

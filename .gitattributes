@@ -1,6 +1,9 @@
-*.php diff=php
+* text=auto
 
-Tests/       export-ignore
+*.php diff=php
+*.md diff=markdown
+
+tests/       export-ignore
 build/       export-ignore
 docs/        export-ignore
 vendor/      export-ignore
@@ -8,3 +11,4 @@ phpunit.*    export-ignore
 infection.*  export-ignore
 phpbench.*   export-ignore
 .*           export-ignore
+.phpstorm.meta.php export
