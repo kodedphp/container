@@ -29,7 +29,7 @@
     "exclude-from-classmap": [
       "build/",
       "docs/",
-      "Tests/"
+      "tests/"
     ]
   },
   "require-dev": {
@@ -41,8 +41,8 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Tests\\Koded\\Unit\\": "Tests/Unit",
-      "Tests\\Koded\\PhpBench\\": "Tests/PhpBench"
+      "Tests\\Koded\\Unit\\": "tests/Unit",
+      "Tests\\Koded\\PhpBench\\": "tests/PhpBench"
     }
   },
   "config": {
