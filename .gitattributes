@@ -12,5 +12,3 @@ vendor/      export-ignore
 phpunit.*    export-ignore
 infection.*  export-ignore
 phpbench.*   export-ignore
-
-.scrutinizer.yml export-ignore
