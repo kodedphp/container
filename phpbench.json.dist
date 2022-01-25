@@ -1,6 +1,6 @@
 {
   "runner.bootstrap": "./vendor/autoload.php",
-  "runner.path": "Tests/PhpBench",
+  "runner.path": "tests/PhpBench",
   "runner.time_unit": "milliseconds",
   "runner.php_disable_ini": false,
   "report.generators": {
