@@ -13,6 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest ]
+        experimental: [false]
         php-version:
           - '8.1'
 
